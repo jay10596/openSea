@@ -13,6 +13,7 @@ module.exports = {
     migrations_directory: './src/migrations/',
     compilers: {
         solc: {
+            version: "^0.8.0",
             optimizer: {
                 enabled: true,
                 runs: 200
