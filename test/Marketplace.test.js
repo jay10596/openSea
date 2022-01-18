@@ -45,6 +45,7 @@ contract(Marketplace, ([deployer, seller, buyer]) => {
 
         // SUCCESS
         it('created successfully', async () => {
+            // console.log(result)
             const event = result.logs[0].args
 
             assert.equal(productCount, 1)            
