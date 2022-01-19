@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 contract Marketplace {
     // State variables
     string public name;
-    uint public counter = 0; 
+    uint public id = 0; 
 
     // Equivalent to database
     struct Product {
@@ -27,6 +27,15 @@ contract Marketplace {
         bool purchased
     );
 
+    // Emit event when a product is purchased
+    event ProductPurchased(
+        uint id,
+        string name,
+        uint price,
+        address owner,
+        bool purchased
+    );
+
     constructor() {
         name = "Exotique Marketplace";
     }
@@ -36,14 +45,37 @@ contract Marketplace {
         require(bytes(_name).length > 0);
         require(_price > 0);
 
-        // Update Counter
-        counter ++;
+        // Update id
+        id ++;
 
         // Create a product
-        products[counter] = Product(counter, _name, _price, msg.sender, false);
+        products[id] = Product(id, _name, _price, msg.sender, false);
 
         // Trigger an event (Similar to return)
-        emit ProductCreated(counter, _name, _price, msg.sender, false);
+        emit ProductCreated(id, _name, _price, msg.sender, false);
+    }
+
+    function purchaseProduct(uint _id) public payable {
+        // Fetch product and owner
+        Product memory _product = products[_id];
+        address _owner = _product.owner;
+
+        // Check for valid params
+        require(_id > 0);
+
+        // Transfer ownership and update price
+        _product.owner = msg.sender;
+        _product.purchased = true;
+        _product.price = msg.value;
+
+        // Update the actual product in blockchain
+        products[_id] = _product;
+
+        // Pay the owner
+        payable(_owner).transfer(msg.value);
+
+        // Trigger an event
+        emit ProductPurchased(id, _product.name, _product.price, msg.sender, true);
     }
 }
 
@@ -51,7 +83,7 @@ contract Marketplace {
 
 /*
 Extra Notes:
-    1) Why counter?
+    1) Why id?
     Solidity doesn't tell us how many products are in Struct. It returns empty vals if you've 5 prods and search for 6. 
 
     2) What is public variable?
@@ -60,10 +92,22 @@ Extra Notes:
     3) Why to trigger event?
     In Laravel, we return some value in the function. In solidity, we can trigger an event which will be passed as an argument in the callback of this function.
 
-    4) What is require() in a function?
+    4) What is msg.sender?
+    It's the address of the person who calls the function i.e the one who makes the purchase with his wallet. In this case, msg. values come from metadata (msg.sender = from: buyer). 
+
+    5) What is require() in a function?
     The function will throw an exception and will stop the execution if the condition is not correct in order to save gas fee.
 
-    5) Why _ on parameters?
+    6) Why _ on parameters?
     _ is just for naming convention to differentiate local variables from state variables. 
+
+    7) What is Product memory _product?
+    Creates a duplicate copy of the product that exists in the blockchain and assigns it to the local variable _product. 
+
+    8) What is payable?
+    Solidity can't let you transfer money or use metadata(msg) value without payable function. The variable which contains owner address also must have payable.
+
+    9) What happens ofter transfering the value?
+    Check the Ganache network. The msg.sender/from: buyer (3rd account) will lose 1 eth and owner (2nd account) will gain one.   
 */
 

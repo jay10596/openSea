@@ -6,7 +6,8 @@ require('chai')
     .use(require('chai-as-promised'))
     .should()
 
-contract(Marketplace, ([deployer, seller, buyer]) => {
+// Equivalent to [accounts[0], accounts[1], accounts[2]] 
+contract(Marketplace, ([deployer, owner, buyer]) => {
     let marketplace
 
     before(async() => {
@@ -15,7 +16,7 @@ contract(Marketplace, ([deployer, seller, buyer]) => {
     })
 
     describe('Marketplace', () => {
-        it('deployed successfully', async () => {
+        it('deploys successfully', async () => {
             const address = await marketplace.address
 
             assert.notEqual(address, 0x0)
@@ -36,31 +37,75 @@ contract(Marketplace, ([deployer, seller, buyer]) => {
     })
 
     describe('Products', () => {
-        let result, productCount
+        let result, id
 
-        before(async () => {
-            result = await marketplace.createProduct('iPhone X', web3.utils.toWei('1', 'Ether'), { from: seller })
-            productCount = await marketplace.counter()
-        })
-
-        // SUCCESS
-        it('created successfully', async () => {
-            // console.log(result)
+        it('creates product', async () => {
+            // Create Product
+            result = await marketplace.createProduct('iPhone X', web3.utils.toWei('1', 'Ether'), { from: owner })
+            id = await marketplace.id()
+            
             const event = result.logs[0].args
 
-            assert.equal(productCount, 1)            
-            assert.equal(event.id.toNumber(), productCount.toNumber(), 'id is correct')
+            // SUCCESS: Product created successfully
+            assert.equal(id, 1)            
+            assert.equal(event.id.toNumber(), id.toNumber(), 'id is correct')
             assert.equal(event.name, 'iPhone X', 'name is correct')
             assert.equal(event.price, '1000000000000000000', 'price is correct')
-            assert.equal(event.owner, seller, 'owner is correct')
-            assert.equal(event.purchased, '', 'purchased is correct')
+            assert.equal(event.owner, owner, 'owner is correct')
+            assert.equal(event.purchased, false, 'purchased is correct')
+
+            // FAILURE: Product couldn't be created with missing params 
+            /*
+             * Metadata is called msg
+             * These tests will fail because in the contract, we've require() for these params
+             */
+            await marketplace.createProduct('', web3.utils.toWei('1', 'Ether'), { from: owner }).should.be.rejected 
+            await marketplace.createProduct('iPhone X', 0, { from: owner }).should.be.rejected 
         })
 
-        // FAILURE
-        it('not created successfully', async () => {
-            // These tests will fail because in the contract, we've require() for these params 
-            await marketplace.createProduct('', web3.utils.toWei('1', 'Ether'), { from: seller }).should.be.rejected 
-            await marketplace.createProduct('iPhone X', 0, { from: seller }).should.be.rejected 
-        })   
+        it('displays product', async () => {
+            // Fetch Product
+            product = await marketplace.products(id)
+                        
+            // SUCCESS: Product displayed successfully
+            assert.equal(product.id.toNumber(), id.toNumber(), 'id is correct')
+            assert.equal(product.name, 'iPhone X', 'name is correct')
+            assert.equal(product.price, '1000000000000000000', 'price is correct')
+            assert.equal(product.owner, owner, 'owner is correct')
+            assert.equal(product.purchased, false, 'purchased is correct')
+        })
+
+        it('purchases product', async () => {
+            let ownerOldBalance, ownerNewBalance, price
+
+            // Owner's balance before purchase
+            ownerOldBalance = await web3.eth.getBalance(owner)
+            ownerOldBalance = new web3.utils.BN(ownerOldBalance)
+
+            // Update Product
+            result = await marketplace.purchaseProduct(id, { from: buyer, value: web3.utils.toWei('2', 'Ether') })
+            const event = result.logs[0].args
+
+            // SUCCESS: Product purchased successfully
+            assert.equal(id, 1)            
+            assert.equal(event.id.toNumber(), id.toNumber(), 'id is correct')
+            assert.equal(event.name, 'iPhone X', 'name is correct')
+            assert.equal(event.price, '2000000000000000000', 'price is correct')
+            assert.equal(event.owner, buyer, 'owner is correct')
+            assert.equal(event.purchased, true, 'purchased is correct')
+
+            // Owner's balance after purchase
+            ownerNewBalance = await web3.eth.getBalance(owner)
+            ownerNewBalance = new web3.utils.BN(ownerNewBalance)
+
+            // SUCCESS: Owner received payment successfully
+            price = web3.utils.toWei('2', 'Ether')
+            price = new web3.utils.BN(price)
+            const updatedBalance = ownerOldBalance.add(price)
+
+            assert.equal(ownerNewBalance.toString(), updatedBalance.toString())
+
+            // FAILURE:
+        })  
     })
 })
