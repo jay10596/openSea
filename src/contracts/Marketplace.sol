@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 contract Marketplace {
     // State variables
     string public name;
-    uint public id = 0; 
+    uint public counter = 0; 
 
     // Equivalent to database
     struct Product {
@@ -41,18 +41,18 @@ contract Marketplace {
     }
 
     function createProduct(string memory _name, uint _price) public {
-        // Check for valid params
+        // Validation
         require(bytes(_name).length > 0);
         require(_price > 0);
 
-        // Update id
-        id ++;
+        // Update counter
+        counter ++;
 
         // Create a product
-        products[id] = Product(id, _name, _price, msg.sender, false);
+        products[counter] = Product(counter, _name, _price, msg.sender, false);
 
         // Trigger an event (Similar to return)
-        emit ProductCreated(id, _name, _price, msg.sender, false);
+        emit ProductCreated(counter, _name, _price, msg.sender, false);
     }
 
     function purchaseProduct(uint _id) public payable {
@@ -60,8 +60,11 @@ contract Marketplace {
         Product memory _product = products[_id];
         address _owner = _product.owner;
 
-        // Check for valid params
-        require(_id > 0);
+        // Validation
+        require(_product.id > 0 && _product.id <= counter); // Id is valid
+        require(msg.value >= _product.price); // There is enough ETH in transation
+        require(!_product.purchased); // Product is not purchased already
+        require(msg.sender != _owner); // Buyer is not the owner
 
         // Transfer ownership and update price
         _product.owner = msg.sender;
@@ -75,7 +78,7 @@ contract Marketplace {
         payable(_owner).transfer(msg.value);
 
         // Trigger an event
-        emit ProductPurchased(id, _product.name, _product.price, msg.sender, true);
+        emit ProductPurchased(_id, _product.name, _product.price, msg.sender, true);
     }
 }
 

@@ -37,18 +37,18 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
     })
 
     describe('Products', () => {
-        let result, id
+        let result, counter
 
         it('creates product', async () => {
             // Create Product
             result = await marketplace.createProduct('iPhone X', web3.utils.toWei('1', 'Ether'), { from: owner })
-            id = await marketplace.id()
+            counter = await marketplace.counter()
             
             const event = result.logs[0].args
 
             // SUCCESS: Product created successfully
-            assert.equal(id, 1)            
-            assert.equal(event.id.toNumber(), id.toNumber(), 'id is correct')
+            assert.equal(counter, 1)            
+            assert.equal(event.id.toNumber(), counter.toNumber(), 'id is correct')
             assert.equal(event.name, 'iPhone X', 'name is correct')
             assert.equal(event.price, '1000000000000000000', 'price is correct')
             assert.equal(event.owner, owner, 'owner is correct')
@@ -65,10 +65,10 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
 
         it('displays product', async () => {
             // Fetch Product
-            product = await marketplace.products(id)
+            product = await marketplace.products(counter)
                         
             // SUCCESS: Product displayed successfully
-            assert.equal(product.id.toNumber(), id.toNumber(), 'id is correct')
+            assert.equal(product.id.toNumber(), counter.toNumber(), 'id is correct')
             assert.equal(product.name, 'iPhone X', 'name is correct')
             assert.equal(product.price, '1000000000000000000', 'price is correct')
             assert.equal(product.owner, owner, 'owner is correct')
@@ -83,12 +83,12 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
             ownerOldBalance = new web3.utils.BN(ownerOldBalance)
 
             // Update Product
-            result = await marketplace.purchaseProduct(id, { from: buyer, value: web3.utils.toWei('2', 'Ether') })
+            result = await marketplace.purchaseProduct(counter, { from: buyer, value: web3.utils.toWei('2', 'Ether') })
             const event = result.logs[0].args
 
             // SUCCESS: Product purchased successfully
-            assert.equal(id, 1)            
-            assert.equal(event.id.toNumber(), id.toNumber(), 'id is correct')
+            assert.equal(counter, 1)            
+            assert.equal(event.id.toNumber(), counter.toNumber(), 'id is correct')
             assert.equal(event.name, 'iPhone X', 'name is correct')
             assert.equal(event.price, '2000000000000000000', 'price is correct')
             assert.equal(event.owner, buyer, 'owner is correct')
@@ -105,7 +105,14 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
 
             assert.equal(ownerNewBalance.toString(), updatedBalance.toString())
 
-            // FAILURE:
+            // FAILURE: Product didn't have valid id
+            await marketplace.purchaseProduct(99, { from: buyer, value: web3.utils.toWei('2', 'Ether') }).should.be.rejected
+
+            // FAILURE: There wasn't enough ETH in transation
+            await marketplace.purchaseProduct(counter, { from: buyer, value: web3.utils.toWei('0.5', 'Ether') }).should.be.rejected
+
+            // FAILURE: Buyer was the owner
+            await marketplace.purchaseProduct(counter, { from: owner, value: web3.utils.toWei('2', 'Ether') }).should.be.rejected
         })  
     })
 })
