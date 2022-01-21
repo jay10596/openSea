@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const Marketplace = artifacts.require("Marketplace");
+const Marketplace = artifacts.require("Marketplace")
 
 // Required for Failure tests (should.be.rejected)
 require('chai')
@@ -11,7 +11,7 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
     let marketplace
 
     before(async() => {
-        accounts = await web3.eth.getAccounts();
+        accounts = await web3.eth.getAccounts()
         marketplace = await Marketplace.deployed()
     })
 
