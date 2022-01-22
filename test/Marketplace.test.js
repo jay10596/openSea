@@ -8,7 +8,7 @@ require('chai')
 
 // Equivalent to [accounts[0], accounts[1], accounts[2]] 
 contract(Marketplace, ([deployer, owner, buyer]) => {
-    let marketplace
+    let marketplace, productCount, collectionCount
 
     before(async() => {
         accounts = await web3.eth.getAccounts()
@@ -19,6 +19,7 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
         it('deploys successfully', async () => {
             const address = await marketplace.address
 
+            // SUCCESS: Marketplace deployed successfully
             assert.notEqual(address, 0x0)
             assert.notEqual(address, '')
             assert.notEqual(address, null)
@@ -28,27 +29,35 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
         it('has a name', async () => {
             const name = await marketplace.name()
 
+            // SUCCESS: Marketplace has correct name
             assert.equal(name, 'Exotique Marketplace')
             assert.notEqual(name, 0x0)
             assert.notEqual(name, '')
             assert.notEqual(name, null)
             assert.notEqual(name, undefined)
         })
+
+        it('has a default collection', async () => {
+            collectionCount = await marketplace.collectionCount()
+
+            // SUCCESS: Collection created successfully
+            assert.equal(collectionCount, 1, 'collection exists')
+        })
     })
 
     describe('Products', () => {
-        let result, counter
+        let result
 
         it('creates product', async () => {
-            // Create Product
-            result = await marketplace.createProduct('iPhone X', web3.utils.toWei('1', 'Ether'), { from: owner })
-            counter = await marketplace.counter()
-            
+            // Create a product
+            result = await marketplace.createProduct('iPhone X', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner })
+            productCount = await marketplace.productCount()
+
             const event = result.logs[0].args
 
             // SUCCESS: Product created successfully
-            assert.equal(counter, 1)            
-            assert.equal(event.id.toNumber(), counter.toNumber(), 'id is correct')
+            assert.equal(productCount, 1)            
+            assert.equal(event.id.toNumber(), productCount.toNumber(), 'id is correct')
             assert.equal(event.name, 'iPhone X', 'name is correct')
             assert.equal(event.price, '1000000000000000000', 'price is correct')
             assert.equal(event.owner, owner, 'owner is correct')
@@ -59,16 +68,17 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
              * Metadata is called msg
              * These tests will fail because in the contract, we've require() for these params
              */
-            await marketplace.createProduct('', web3.utils.toWei('1', 'Ether'), { from: owner }).should.be.rejected 
-            await marketplace.createProduct('iPhone X', 0, { from: owner }).should.be.rejected 
+            await marketplace.createProduct('', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
+            await marketplace.createProduct('iPhone X', 0, collectionCount, { from: owner }).should.be.rejected 
+            await marketplace.createProduct('iPhone X', web3.utils.toWei('1', 'Ether'), { from: owner }).should.be.rejected 
         })
 
         it('displays product', async () => {
-            // Fetch Product
-            product = await marketplace.products(counter)
+            // Fetch a product
+            product = await marketplace.products(productCount) // Last product
                         
             // SUCCESS: Product displayed successfully
-            assert.equal(product.id.toNumber(), counter.toNumber(), 'id is correct')
+            assert.equal(product.id.toNumber(), productCount.toNumber(), 'id is correct')
             assert.equal(product.name, 'iPhone X', 'name is correct')
             assert.equal(product.price, '1000000000000000000', 'price is correct')
             assert.equal(product.owner, owner, 'owner is correct')
@@ -83,12 +93,12 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
             ownerOldBalance = new web3.utils.BN(ownerOldBalance)
 
             // Update Product
-            result = await marketplace.purchaseProduct(counter, { from: buyer, value: web3.utils.toWei('2', 'Ether') })
+            result = await marketplace.purchaseProduct(productCount, { from: buyer, value: web3.utils.toWei('2', 'Ether') })
             const event = result.logs[0].args
 
             // SUCCESS: Product purchased successfully
-            assert.equal(counter, 1)            
-            assert.equal(event.id.toNumber(), counter.toNumber(), 'id is correct')
+            assert.equal(productCount, 1)            
+            assert.equal(event.id.toNumber(), productCount.toNumber(), 'id is correct')
             assert.equal(event.name, 'iPhone X', 'name is correct')
             assert.equal(event.price, '2000000000000000000', 'price is correct')
             assert.equal(event.owner, buyer, 'owner is correct')
@@ -109,10 +119,42 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
             await marketplace.purchaseProduct(99, { from: buyer, value: web3.utils.toWei('2', 'Ether') }).should.be.rejected
 
             // FAILURE: There wasn't enough ETH in transation
-            await marketplace.purchaseProduct(counter, { from: buyer, value: web3.utils.toWei('0.5', 'Ether') }).should.be.rejected
+            await marketplace.purchaseProduct(productCount, { from: buyer, value: web3.utils.toWei('0.5', 'Ether') }).should.be.rejected
 
             // FAILURE: Buyer was the owner
-            await marketplace.purchaseProduct(counter, { from: owner, value: web3.utils.toWei('2', 'Ether') }).should.be.rejected
+            await marketplace.purchaseProduct(productCount, { from: owner, value: web3.utils.toWei('2', 'Ether') }).should.be.rejected
         })  
+    })
+
+    describe('Collections', () => {
+        let result
+
+        it('creates collection', async () => {
+            // Create a product
+            result = await marketplace.createCollection('Bored Ape', { from: owner })
+            collectionCount = await marketplace.collectionCount()
+
+            const event = result.logs[0].args
+
+            // SUCCESS: Collection created successfully
+            assert.equal(collectionCount, 2) // First collection is created via constructor            
+            assert.equal(event.id.toNumber(), collectionCount.toNumber(), 'id is correct')
+            assert.equal(event.name, 'Bored Ape', 'name is correct')
+            assert.equal(event.owner, owner, 'owner is correct')
+
+            // FAILURE: Collection couldn't be created with missing params 
+            await marketplace.createProduct('', { from: owner }).should.be.rejected 
+            await marketplace.createProduct('Bored Ape').should.be.rejected 
+        })
+
+        it('displays collection', async () => {
+            // Fetch a collection
+            collection = await marketplace.collections(collectionCount) // Last collection
+                        
+            // SUCCESS: collection displayed successfully
+            assert.equal(collection.id.toNumber(), collectionCount.toNumber(), 'id is correct')
+            assert.equal(collection.name, 'Bored Ape', 'name is correct')
+            assert.equal(collection.owner, owner, 'owner is correct')
+        })
     })
 })

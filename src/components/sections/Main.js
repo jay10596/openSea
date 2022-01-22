@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Temp from '../blocks/Temp';
+
 
 const Main = (props) => {
     const [name, setName] = useState('');
@@ -44,6 +46,8 @@ const Main = (props) => {
                     )
                 })}
             </ul>
+
+            <Temp products={props.products} />
         </main>
     );
 }

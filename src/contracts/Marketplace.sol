@@ -4,7 +4,8 @@ pragma solidity ^0.8.0;
 contract Marketplace {
     // State variables
     string public name;
-    uint public counter = 0; 
+    uint public productCount = 0; 
+    uint public collectionCount = 0; 
 
     // Equivalent to database
     struct Product {
@@ -13,6 +14,7 @@ contract Marketplace {
         uint price;
         address owner;
         bool purchased;
+        uint collection_id;
     }
 
     // Similar to declaring PK for adding data
@@ -24,7 +26,8 @@ contract Marketplace {
         string name,
         uint price,
         address owner,
-        bool purchased
+        bool purchased,
+        uint collection_id
     );
 
     // Emit event when a product is purchased
@@ -33,26 +36,47 @@ contract Marketplace {
         string name,
         uint price,
         address owner,
-        bool purchased
+        bool purchased,
+        uint collection_id
+    );
+
+    // Equivalent to database
+    struct Collection {
+        uint id;
+        string name;
+        address owner;
+    }
+
+    // Similar to declaring PK for adding data
+    mapping(uint => Collection) public collections;
+
+    // Emit event when a collection is created
+    event CollectionCreated(
+        uint id,
+        string name,
+        address owner
     );
 
     constructor() {
         name = "Exotique Marketplace";
+
+        // Create a dafault collection
+        createCollection('Default'); 
     }
 
-    function createProduct(string memory _name, uint _price) public {
+    function createProduct(string memory _name, uint _price, uint _collection_id) public {
         // Validation
         require(bytes(_name).length > 0);
         require(_price > 0);
 
         // Update counter
-        counter ++;
+        productCount ++;
 
         // Create a product
-        products[counter] = Product(counter, _name, _price, msg.sender, false);
+        products[productCount] = Product(productCount, _name, _price, msg.sender, false, _collection_id);
 
         // Trigger an event (Similar to return)
-        emit ProductCreated(counter, _name, _price, msg.sender, false);
+        emit ProductCreated(productCount, _name, _price, msg.sender, false, _collection_id);
     }
 
     function purchaseProduct(uint _id) public payable {
@@ -61,7 +85,7 @@ contract Marketplace {
         address _owner = _product.owner;
 
         // Validation
-        require(_product.id > 0 && _product.id <= counter); // Id is valid
+        require(_product.id > 0 && _product.id <= productCount); // Id is valid
         require(msg.value >= _product.price); // There is enough ETH in transation
         require(!_product.purchased); // Product is not purchased already
         require(msg.sender != _owner); // Buyer is not the owner
@@ -78,7 +102,21 @@ contract Marketplace {
         payable(_owner).transfer(msg.value);
 
         // Trigger an event
-        emit ProductPurchased(_id, _product.name, _product.price, msg.sender, true);
+        emit ProductPurchased(_id, _product.name, _product.price, msg.sender, true, _product.collection_id);
+    }
+
+    function createCollection(string memory _name) public {
+        // Validation
+        require(bytes(_name).length > 0);
+
+        // Update counter
+        collectionCount ++;
+
+        // Create a collection
+        collections[collectionCount] = Collection(collectionCount, _name, msg.sender);
+
+        // Trigger an event (Similar to return)
+        emit CollectionCreated(collectionCount, _name, msg.sender);
     }
 }
 
@@ -86,10 +124,10 @@ contract Marketplace {
 
 /*
 Extra Notes:
-    1) Why id?
+    1) Why counter?
     Solidity doesn't tell us how many products are in Struct. It returns empty vals if you've 5 prods and search for 6. 
 
-    2) What is public variable?
+    2) What is state/public variable?
     Using public converts vaiable into function which can be used globally including console. More like auto increment PK.
 
     3) Why to trigger event?
