@@ -12,6 +12,8 @@ function ProductList() {
             {marketplace.products.map((product, key) => {
                 return(
                     <div key={key}>
+                        <img src={product.media} alt={product.name} />
+
                         {product.name}
                         {window.web3.utils.fromWei(product.price.toString(), 'Ether')} ETH
                         {product.owner}

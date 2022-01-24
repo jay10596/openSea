@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { MarketplaceContext } from '../App';
 import SectionHeader from '../reusables/SectionHeader';
+import CollectionDefault from '../../assets/BoredApeYatchClub.png'
 
 function CollectionForm() {
     const marketplace = useContext(MarketplaceContext);
@@ -14,7 +15,7 @@ function CollectionForm() {
         <section>
             <SectionHeader heading="Create a collection" />
 
-            <form onSubmit={() => marketplace.createCollection(name)}>
+            <form onSubmit={() => marketplace.createCollection(name, CollectionDefault)}>
                 <label>
                     Name:
                     <input type="text" name="name" value={name} onChange={changeName} />

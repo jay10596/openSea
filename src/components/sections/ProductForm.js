@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { MarketplaceContext } from '../App';
 import SectionHeader from '../reusables/SectionHeader';
+import DefaultProduct from '../../assets/BoredApe0001.png'
 
 function ProductForm() {
     const marketplace = useContext(MarketplaceContext);
@@ -18,7 +19,7 @@ function ProductForm() {
         <section>
             <SectionHeader heading="Create a product" />
 
-            <form onSubmit={() => marketplace.createProduct(name, window.web3.utils.toWei(price, 'Ether'), collection_id)}>
+            <form onSubmit={() => marketplace.createProduct(name, DefaultProduct, window.web3.utils.toWei(price, 'Ether'), collection_id)}>
                 <label>
                     Name:
                     <input type="text" name="name" value={name} onChange={changeName} />

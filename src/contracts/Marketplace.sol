@@ -66,7 +66,7 @@ contract Marketplace {
         name = "Exotique Marketplace";
 
         // Create a dafault collection
-        createCollection('Default', 'logo.png'); 
+        createCollection('Default', 'default.png'); 
     }
 
     function createProduct(string memory _name, string memory _media, uint _price, uint _collection_id) public {

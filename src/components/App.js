@@ -81,10 +81,10 @@ class App extends Component {
         this.createCollection = this.createCollection.bind(this)
     }
 
-    createProduct(name, price, collection_id) {
+    createProduct(name, media, price, collection_id) {
         this.setState({ loading: true })
 
-        this.state.marketplace.methods.createProduct(name, price, collection_id).send({ from: this.state.account }) /* https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#id26 */
+        this.state.marketplace.methods.createProduct(name, media, price, collection_id).send({ from: this.state.account }) /* https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#id26 */
             .on('receipt', (receipt) => {
                 this.setState({ loading: false })
             })
@@ -99,10 +99,10 @@ class App extends Component {
             })
     }
 
-    createCollection(name) {
+    createCollection(name, media) {
         this.setState({ loading: true })
 
-        this.state.marketplace.methods.createCollection(name).send({ from: this.state.account })
+        this.state.marketplace.methods.createCollection(name, media).send({ from: this.state.account })
             .on('receipt', (receipt) => {
                 this.setState({ loading: false })
             })

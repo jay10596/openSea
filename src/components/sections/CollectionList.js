@@ -12,6 +12,8 @@ function CollectionList() {
             {marketplace.collections.map((collection, key) => {
                 return(
                     <div key={key}>
+                        <img src={collection.media} alt={collection.name} />
+
                         {collection.name}
                         {collection.owner}
                     </div>
