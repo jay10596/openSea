@@ -1,6 +1,7 @@
 import React from 'react';
 import Banner from '../sections/Banner';
 import CollectionForm from '../sections/CollectionForm';
+import CollectionList from '../sections/CollectionList';
 import ProductForm from '../sections/ProductForm';
 import ProductList from '../sections/ProductList';
 
@@ -10,6 +11,8 @@ function Home() {
             <Banner />
 
             <CollectionForm />
+
+            <CollectionList />
 
             <ProductForm />
 

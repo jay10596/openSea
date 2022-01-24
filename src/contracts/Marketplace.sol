@@ -11,6 +11,7 @@ contract Marketplace {
     struct Product {
         uint id;
         string name;
+        string media;
         uint price;
         address owner;
         bool purchased;
@@ -24,6 +25,7 @@ contract Marketplace {
     event ProductCreated(
         uint id,
         string name,
+        string media,
         uint price,
         address owner,
         bool purchased,
@@ -34,6 +36,7 @@ contract Marketplace {
     event ProductPurchased(
         uint id,
         string name,
+        string media,
         uint price,
         address owner,
         bool purchased,
@@ -44,6 +47,7 @@ contract Marketplace {
     struct Collection {
         uint id;
         string name;
+        string media;
         address owner;
     }
 
@@ -54,6 +58,7 @@ contract Marketplace {
     event CollectionCreated(
         uint id,
         string name,
+        string media,
         address owner
     );
 
@@ -61,22 +66,23 @@ contract Marketplace {
         name = "Exotique Marketplace";
 
         // Create a dafault collection
-        createCollection('Default'); 
+        createCollection('Default', 'logo.png'); 
     }
 
-    function createProduct(string memory _name, uint _price, uint _collection_id) public {
+    function createProduct(string memory _name, string memory _media, uint _price, uint _collection_id) public {
         // Validation
         require(bytes(_name).length > 0);
+        require(bytes(_media).length > 0);
         require(_price > 0);
 
         // Update counter
         productCount ++;
 
         // Create a product
-        products[productCount] = Product(productCount, _name, _price, msg.sender, false, _collection_id);
+        products[productCount] = Product(productCount, _name, _media, _price, msg.sender, false, _collection_id);
 
         // Trigger an event (Similar to return)
-        emit ProductCreated(productCount, _name, _price, msg.sender, false, _collection_id);
+        emit ProductCreated(productCount, _name, _media, _price, msg.sender, false, _collection_id);
     }
 
     function purchaseProduct(uint _id) public payable {
@@ -102,21 +108,22 @@ contract Marketplace {
         payable(_owner).transfer(msg.value);
 
         // Trigger an event
-        emit ProductPurchased(_id, _product.name, _product.price, msg.sender, true, _product.collection_id);
+        emit ProductPurchased(_id, _product.name, _product.media, _product.price, msg.sender, true, _product.collection_id);
     }
 
-    function createCollection(string memory _name) public {
+    function createCollection(string memory _name, string memory _media) public {
         // Validation
         require(bytes(_name).length > 0);
+        require(bytes(_media).length > 0);
 
         // Update counter
         collectionCount ++;
 
         // Create a collection
-        collections[collectionCount] = Collection(collectionCount, _name, msg.sender);
+        collections[collectionCount] = Collection(collectionCount, _name, _media, msg.sender);
 
         // Trigger an event (Similar to return)
-        emit CollectionCreated(collectionCount, _name, msg.sender);
+        emit CollectionCreated(collectionCount, _name, _media, msg.sender);
     }
 }
 
