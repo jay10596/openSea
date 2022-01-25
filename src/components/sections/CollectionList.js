@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { MarketplaceContext } from '../App';
+
 import SectionHeader from '../reusables/SectionHeader';
 
 function CollectionList() {

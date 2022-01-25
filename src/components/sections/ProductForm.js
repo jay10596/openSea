@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { MarketplaceContext } from '../App';
+
 import SectionHeader from '../reusables/SectionHeader';
 import DefaultProduct from '../../assets/BoredApe0001.png'
 

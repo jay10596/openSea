@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Banner from '../sections/Banner';
 import CollectionForm from '../sections/CollectionForm';
 import CollectionList from '../sections/CollectionList';
