@@ -39,9 +39,11 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
 
         it('has a default collection', async () => {
             collectionCount = await marketplace.collectionCount()
+            collection = await marketplace.collections(collectionCount)
 
             // SUCCESS: Collection created successfully
             assert.equal(collectionCount, 1, 'collection exists')
+            assert.equal(collection.mediaHash, '', 'collection has no mediaHash')
         })
     })
 
@@ -50,7 +52,7 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
 
         it('creates product', async () => {
             // Create a product
-            result = await marketplace.createProduct('iPhone X', 'bored_ape.png', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner })
+            result = await marketplace.createProduct('iPhone X', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner })
             productCount = await marketplace.productCount()
 
             const event = result.logs[0].args
@@ -59,7 +61,7 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
             assert.equal(productCount, 1)            
             assert.equal(event.id.toNumber(), productCount.toNumber(), 'id is correct')
             assert.equal(event.name, 'iPhone X', 'name is correct')
-            assert.equal(event.media, 'bored_ape.png', 'media is correct')
+            assert.equal(event.mediaHash, 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', 'mediaHash is correct')
             assert.equal(event.price, '1000000000000000000', 'price is correct')
             assert.equal(event.owner, owner, 'owner is correct')
             assert.equal(event.purchased, false, 'purchased is correct')
@@ -69,10 +71,10 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
              * Metadata is called msg
              * These tests will fail because in the contract, we've require() for these params
              */
-            await marketplace.createProduct('', 'bored_ape.png', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
+            await marketplace.createProduct('', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
             await marketplace.createProduct('iPhone X', '', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
-            await marketplace.createProduct('iPhone X', 'bored_ape.png', 0, collectionCount, { from: owner }).should.be.rejected 
-            await marketplace.createProduct('iPhone X', 'bored_ape.png', web3.utils.toWei('1', 'Ether'), { from: owner }).should.be.rejected 
+            await marketplace.createProduct('iPhone X', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', 0, collectionCount, { from: owner }).should.be.rejected 
+            await marketplace.createProduct('iPhone X', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('1', 'Ether'), { from: owner }).should.be.rejected 
         })
 
         it('displays product', async () => {
@@ -82,7 +84,7 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
             // SUCCESS: Product displayed successfully
             assert.equal(product.id.toNumber(), productCount.toNumber(), 'id is correct')
             assert.equal(product.name, 'iPhone X', 'name is correct')
-            assert.equal(product.media, 'bored_ape.png', 'name is correct')
+            assert.equal(product.mediaHash, 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', 'name is correct')
             assert.equal(product.price, '1000000000000000000', 'price is correct')
             assert.equal(product.owner, owner, 'owner is correct')
             assert.equal(product.purchased, false, 'purchased is correct')
@@ -103,7 +105,7 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
             assert.equal(productCount, 1)            
             assert.equal(event.id.toNumber(), productCount.toNumber(), 'id is correct')
             assert.equal(event.name, 'iPhone X', 'name is correct')
-            assert.equal(event.media, 'bored_ape.png', 'name is correct')
+            assert.equal(event.mediaHash, 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', 'name is correct')
             assert.equal(event.price, '2000000000000000000', 'price is correct')
             assert.equal(event.owner, buyer, 'owner is correct')
             assert.equal(event.purchased, true, 'purchased is correct')
@@ -134,8 +136,8 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
         let result
 
         it('creates collection', async () => {
-            // Create a product
-            result = await marketplace.createCollection('Bored Ape', 'bored_ape.png', { from: owner })
+            // Create a collection
+            result = await marketplace.createCollection('Bored Ape', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', { from: owner })
             collectionCount = await marketplace.collectionCount()
 
             const event = result.logs[0].args
@@ -144,13 +146,11 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
             assert.equal(collectionCount, 2) // First collection is created via constructor            
             assert.equal(event.id.toNumber(), collectionCount.toNumber(), 'id is correct')
             assert.equal(event.name, 'Bored Ape', 'name is correct')
-            assert.equal(event.media, 'bored_ape.png', 'name is correct')
+            assert.equal(event.mediaHash, 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', 'mediaHash is correct')
             assert.equal(event.owner, owner, 'owner is correct')
 
             // FAILURE: Collection couldn't be created with missing params 
-            await marketplace.createProduct('', { from: owner }).should.be.rejected 
-            await marketplace.createProduct('Bored Ape', '', { from: owner }).should.be.rejected 
-            await marketplace.createProduct('Bored Ape', 'bored_ape.png').should.be.rejected 
+            await marketplace.createCollection('', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', { from: owner }).should.be.rejected 
         })
 
         it('displays collection', async () => {
@@ -160,7 +160,7 @@ contract(Marketplace, ([deployer, owner, buyer]) => {
             // SUCCESS: collection displayed successfully
             assert.equal(collection.id.toNumber(), collectionCount.toNumber(), 'id is correct')
             assert.equal(collection.name, 'Bored Ape', 'name is correct')
-            assert.equal(collection.media, 'bored_ape.png', 'media is correct')
+            assert.equal(collection.mediaHash, 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', 'media is correct')
             assert.equal(collection.owner, owner, 'owner is correct')
         })
     })

@@ -1,40 +1,61 @@
 import React, { useState, useContext } from 'react';
 import { MarketplaceContext } from '../App';
+import { create } from 'ipfs-http-client';
 
 import SectionHeader from '../reusables/SectionHeader';
-import DefaultProduct from '../../assets/BoredApe0001.png'
+import NoImage from '../../assets/NoImage.jpeg';
 
 function ProductForm() {
-    const marketplace = useContext(MarketplaceContext);
+    const marketplace = useContext(MarketplaceContext)
 
-    const [name, setName] = useState('');
-    const [price, setPrice] = useState('');
-    const [collection_id, setCollectionID] = useState('1');
+    const [name, setName] = useState('')
+    const [media, setMedia] = useState()
+    const [price, setPrice] = useState('')
+    const [collection_id, setCollectionID] = useState('1')
 
     // Binding values
-    const changeName = (e) => setName(e.target.value);
-    const changePrice = (e) => setPrice(e.target.value.toString());
-    const changeCollectionID = (e) => setCollectionID(e.target.value.toString());
+    const updateName = (e) => setName(e.target.value)
+    const updatePrice = (e) => setPrice(e.target.value.toString())
+    const updateMedia = (e) => setMedia(e.target.files[0])
+    const updateCollectionID = (e) => setCollectionID(e.target.value.toString())
+
+    // Submit form
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        let client, uploadedMedia
+
+        // Upload media on IPFS and get Hash
+        client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
+        media == null ? uploadedMedia = await client.add(NoImage) : uploadedMedia = await client.add(media)
+
+        marketplace.createProduct(name, uploadedMedia.path, window.web3.utils.toWei(price, 'Ether'), collection_id)
+    }
 
     return (
         <section>
             <SectionHeader heading="Create a product" />
 
-            <form onSubmit={() => marketplace.createProduct(name, DefaultProduct, window.web3.utils.toWei(price, 'Ether'), collection_id)}>
+            <form onSubmit={handleSubmit}>
                 <label>
                     Name:
-                    <input type="text" name="name" value={name} onChange={changeName} />
+                    <input type="text" name="name" value={name} onChange={updateName} />
                 </label>
 
                 <label>
                     Price:
-                    <input type="text" name="price" value={price} onChange={changePrice} />
+                    <input type="text" name="price" value={price} onChange={updatePrice} />
+                </label>
+
+                <label>
+                    File Upload:
+                    <input type="file" name="media" onChange={updateMedia} />
                 </label>
 
                 <label>
                     Collection:
 
-                    <select name="collection_id" onChange={changeCollectionID} value={collection_id}>
+                    <select name="collection_id" onChange={updateCollectionID} value={collection_id}>
                         {marketplace.collections.map((collection, key) => {
                             return(
                                 <option key={key} value={collection.id}>{collection.name}</option>

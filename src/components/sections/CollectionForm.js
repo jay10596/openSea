@@ -3,7 +3,7 @@ import { MarketplaceContext } from '../App';
 import { create } from 'ipfs-http-client'
 
 import SectionHeader from '../reusables/SectionHeader';
-// import CollectionDefault from '../../assets/BoredApeYatchClub.png';
+import NoImage from '../../assets/NoImage.jpeg';
 
 function CollectionForm() {
     const marketplace = useContext(MarketplaceContext)
@@ -12,40 +12,35 @@ function CollectionForm() {
     const [media, setMedia] = useState()
 
     // Binding values
-    const changeName = (e) => setName(e.target.value)
-    const changeMedia = (e) => setMedia(e.target.files[0])
-    
-    // Upload media on IPFS
-    const uploadMedia = async (e) => {
-        const client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
-        const file = await client.add(media)
+    const updateName = (e) => setName(e.target.value)
+    const updateMedia = (e) => setMedia(e.target.files[0])
 
-        fetch(`https://ipfs.infura.io/ipfs/${file.path}`)
-            .then(res => {
-                console.log(res.url) 
-                setMedia(res.url)
-                console.log(media)
-            })
-            .catch(err => console.log(err)) 
+    // Submit form
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        let client, uploadedMedia
+
+        // Upload media on IPFS and get Hash
+        client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
+        media == null ? uploadedMedia = await client.add(NoImage) : uploadedMedia = await client.add(media)
+
+        marketplace.createCollection(name, uploadedMedia.path)
     }
 
     return (
         <section>
             <SectionHeader heading="Create a collection" />
 
-            <form onSubmit={(e) => {
-                e.preventDefault()
-                uploadMedia()
-                // marketplace.createCollection(name, media)
-            }}>
+            <form onSubmit={handleSubmit}>
                 <label>
                     Name:
-                    <input type="text" name="name" value={name} onChange={changeName} />
+                    <input type="text" name="name" value={name} onChange={updateName} />
                 </label>
 
                 <label>
                     File Upload:
-                    <input type="file" name="media" onChange={changeMedia} />
+                    <input type="file" name="media" onChange={updateMedia} />
                 </label>
 
                 <input type="submit" value="Submit" />
