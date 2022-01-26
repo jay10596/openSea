@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { MarketplaceContext } from '../App';
 
 import SectionHeader from '../reusables/SectionHeader';
 import NoImage from '../../assets/NoImage.jpeg';
 
 function ProductList() {
-    const marketplace = useContext(MarketplaceContext);
+    const marketplace = useContext(MarketplaceContext)
 
     return (
         <section>
@@ -13,22 +14,24 @@ function ProductList() {
 
             {marketplace.products.map((product, key) => {
                 return (
-                    <div key={key}>
-                        {product.mediaHash.length > 0 
-                            ? <img src={`https://ipfs.infura.io/ipfs/${product.mediaHash}`} alt={product.name} />
-                            : <img src={NoImage} alt={product.name} />
-                        }
+                    <Link to={`/products/${product.id}`} key={key}>
+                        <div>
+                            {product.mediaHash.length > 0 
+                                ? <img src={`https://ipfs.infura.io/ipfs/${product.mediaHash}`} alt={product.name} />
+                                : <img src={NoImage} alt={product.name} />
+                            }
 
-                        {product.name}
-                        {window.web3.utils.fromWei(product.price.toString(), 'Ether')} ETH
-                        {product.owner}
-                        {product.purchased
-                            ? null
-                            : <button onClick={() => marketplace.purchaseProduct(product.id, product.price)}>Buy</button>
-                        }
+                            {product.name}
+                            {window.web3.utils.fromWei(product.price.toString(), 'Ether')} ETH
+                            {product.owner}
+                            {marketplace.collections[product.collection_id - 1].name}
 
-                        {marketplace.collections[product.collection_id].name}
-                    </div>
+                            {product.purchased || product.owner === marketplace.account 
+                                ? null
+                                : <button onClick={() => marketplace.purchaseProduct(product.id, product.price)}>Buy</button>
+                            }
+                        </div>
+                    </Link>
                 )
             })}
         </section>
