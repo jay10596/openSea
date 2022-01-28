@@ -26,9 +26,9 @@ function ProductForm() {
 
         // Upload media on IPFS and get Hash
         const client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
-        const uploadedMedia = media == null ? null : await client.add(media)
+        const uploadedMedia = await client.add(media)
 
-        dispatch(createProduct({name: name, media: uploadedMedia ? uploadedMedia.path : '', price: window.web3.utils.toWei(price, 'Ether'), collection_id: collection_id}))
+        dispatch(createProduct({name: name, media: uploadedMedia.path, price: window.web3.utils.toWei(price, 'Ether'), collection_id: collection_id}))
     }
 
     return (
@@ -48,7 +48,7 @@ function ProductForm() {
 
                 <label>
                     File Upload:
-                    <input type="file" name="media" onChange={updateMedia} />
+                    <input type="file" name="media" onChange={updateMedia} required />
                 </label>
 
                 <label>
