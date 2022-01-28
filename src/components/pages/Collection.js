@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
-import { MarketplaceContext } from '../App';
+import { useSelector } from 'react-redux';
 
 function Collection() {
-    const { id } = useParams()
-    const marketplace = useContext(MarketplaceContext)
+    const { id } = useParams() // Route parameter
+    const marketplace = useSelector((state) => state.marketplace.value)
 
     return (
         <main>

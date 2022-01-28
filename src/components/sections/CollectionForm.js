@@ -1,12 +1,12 @@
-import React, { useState, useContext } from 'react';
-import { MarketplaceContext } from '../App';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { createCollection } from '../../storage/reducers/Marketplace'
 import { create } from 'ipfs-http-client'
 
 import SectionHeader from '../reusables/SectionHeader';
-import NoImage from '../../assets/NoImage.jpeg';
 
 function CollectionForm() {
-    const marketplace = useContext(MarketplaceContext)
+    const dispatch = useDispatch()
 
     const [name, setName] = useState('')
     const [media, setMedia] = useState()
@@ -19,13 +19,11 @@ function CollectionForm() {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        let client, uploadedMedia
-
         // Upload media on IPFS and get Hash
-        client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
-        media == null ? uploadedMedia = await client.add(NoImage) : uploadedMedia = await client.add(media)
-
-        marketplace.createCollection(name, uploadedMedia.path)
+        const client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
+        const uploadedMedia = media == null ? null : await client.add(media)
+        
+        dispatch(createCollection({name: name, media: uploadedMedia ? uploadedMedia.path : ''}))
     }
 
     return (

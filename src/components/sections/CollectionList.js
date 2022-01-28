@@ -1,12 +1,12 @@
-import React, { useContext } from 'react';
-import { MarketplaceContext } from '../App';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 import SectionHeader from '../reusables/SectionHeader';
-import { Link } from 'react-router-dom';
 import NoImage from '../../assets/NoImage.jpeg';
 
 function CollectionList() {
-    const marketplace = useContext(MarketplaceContext);
+    const marketplace = useSelector((state) => state.marketplace.value)
 
     return (
         <section>
@@ -20,6 +20,7 @@ function CollectionList() {
                                 ? <img src={`https://ipfs.infura.io/ipfs/${collection.mediaHash}`} alt={collection.name} />
                                 : <img src={NoImage} alt={collection.name} />
                             }
+                            <small>{collection.mediaHash}</small>
                             
                             {collection.name}
                             {collection.owner}

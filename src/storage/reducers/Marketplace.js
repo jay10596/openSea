@@ -14,16 +14,39 @@ const marketplaceSlice = createSlice({
         }
     },
     reducers: {
-        setMarketplace: async (state, action) => {
+        setMarketplace: (state, action) => {
             state.value = action.payload
-            const markp = action.payload.marketplace
-            const temp = await markp.methods.collectionCount().call()
+        },
+        createCollection: (state, action) => {
+            state.value.loading = true
 
-            console.log(action.payload, temp)
+            state.value.marketplace.methods.createCollection(action.payload.name, action.payload.media)
+                .send({ from: state.value.account })
+                .on('receipt', (receipt) => {
+                    state.value.loading = false
+                })
+        },
+        createProduct: (state, action) => {
+            state.value.loading = true
+
+            state.value.marketplace.methods.createProduct(action.payload.name, action.payload.media, action.payload.price, action.payload.collection_id)
+                .send({ from: state.value.account })
+                .on('receipt', (receipt) => {
+                    state.value.loading = false
+                })
+        },
+        purchaseProduct: (state, action) => {
+            state.value.loading = true
+
+            state.value.marketplace.methods.purchaseProduct(action.payload.id)
+                .send({ from: state.value.account, value: action.payload.price })
+                .on('receipt', (receipt) => {
+                    state.value.loading = false
+                })
         }
     }
 })
 
-export const { login, setAccount, setMarketplace } = marketplaceSlice.actions;
+export const { setMarketplace, createCollection, createProduct, purchaseProduct } = marketplaceSlice.actions;
 
 export default marketplaceSlice.reducer;

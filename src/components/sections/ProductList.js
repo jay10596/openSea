@@ -1,12 +1,14 @@
-import React, { useContext } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { purchaseProduct } from '../../storage/reducers/Marketplace';
 import { Link } from 'react-router-dom';
-import { MarketplaceContext } from '../App';
 
 import SectionHeader from '../reusables/SectionHeader';
 import NoImage from '../../assets/NoImage.jpeg';
 
 function ProductList() {
-    const marketplace = useContext(MarketplaceContext)
+    const dispatch = useDispatch()
+    const marketplace = useSelector((state) => state.marketplace.value)
 
     return (
         <section>
@@ -28,7 +30,7 @@ function ProductList() {
 
                             {product.purchased || product.owner === marketplace.account 
                                 ? null
-                                : <button onClick={() => marketplace.purchaseProduct(product.id, product.price)}>Buy</button>
+                                : <button onClick={() => dispatch(purchaseProduct({id: product.id, price: product.price}))}>Buy</button>
                             }
                         </div>
                     </Link>

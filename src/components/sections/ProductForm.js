@@ -1,12 +1,13 @@
-import React, { useState, useContext } from 'react';
-import { MarketplaceContext } from '../App';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createProduct } from '../../storage/reducers/Marketplace';
 import { create } from 'ipfs-http-client';
 
 import SectionHeader from '../reusables/SectionHeader';
-import NoImage from '../../assets/NoImage.jpeg';
 
 function ProductForm() {
-    const marketplace = useContext(MarketplaceContext)
+    const dispatch = useDispatch()
+    const marketplace = useSelector((state) => state.marketplace.value)
 
     const [name, setName] = useState('')
     const [media, setMedia] = useState()
@@ -23,13 +24,11 @@ function ProductForm() {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        let client, uploadedMedia
-
         // Upload media on IPFS and get Hash
-        client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
-        media == null ? uploadedMedia = await client.add(NoImage) : uploadedMedia = await client.add(media)
+        const client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
+        const uploadedMedia = media == null ? null : await client.add(media)
 
-        marketplace.createProduct(name, uploadedMedia.path, window.web3.utils.toWei(price, 'Ether'), collection_id)
+        dispatch(createProduct({name: name, media: uploadedMedia ? uploadedMedia.path : '', price: window.web3.utils.toWei(price, 'Ether'), collection_id: collection_id}))
     }
 
     return (

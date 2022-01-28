@@ -1,13 +1,21 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { setTheme } from '../../storage/reducers/Theme'
 import { Link } from 'react-router-dom';
 
 const Header = (props) => {
+    const dispatch = useDispatch()
+
     return (
         <header>
             {props.account}
             <Link to="/collections">collections</Link>
             <Link to="/products">Products</Link>
             <Link to="/about">About</Link>
+
+            <button onClick={() => dispatch(setTheme({color: props.themeColor === 'light' ? 'dark' : 'light'}))}>
+                {props.themeColor}
+            </button>
         </header>
     );
 }
