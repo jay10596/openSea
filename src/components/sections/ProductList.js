@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { purchaseProduct } from '../../storage/reducers/Marketplace';
+import { purchaseProduct } from '../../helpers/reducers/Marketplace';
 import { Link } from 'react-router-dom';
 
 import SectionHeader from '../reusables/SectionHeader';

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-import Home from './pages/Home';
-import Collections from './pages/Collections';
-import Collection from './pages/Collection';
-import Products from './pages/Products';
-import Product from './pages/Product';
-import About from './pages/About';
-import Error from './pages/Error';
+import Home from '../components/pages/Home';
+import Collections from '../components/pages/Collections';
+import Collection from '../components/pages/Collection';
+import Products from '../components/pages/Products';
+import Product from '../components/pages/Product';
+import About from '../components/pages/About';
+import Error from '../components/pages/Error';
 
 function Router() {
     return (

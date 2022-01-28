@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { setTheme } from '../../storage/reducers/Theme'
+import { setTheme } from '../../helpers/reducers/Theme'
 import { Link } from 'react-router-dom';
 
 const Header = (props) => {

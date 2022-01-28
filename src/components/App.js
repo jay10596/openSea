@@ -2,11 +2,11 @@ import React, { useEffect }  from 'react';
 import Web3 from 'web3';
 import Marketplace from '../build/Marketplace.json';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMarketplace } from '../storage/reducers/Marketplace'
+import { setMarketplace } from '../helpers/reducers/Marketplace'
+import Router from '../helpers/router';
 
 import Header from './sections/Header';
 import Loading from './reusables/Loader';
-import Router from './Router';
 import Footer from './sections/Footer';
 
 // Can't use Redux hooks in a class component
@@ -25,7 +25,7 @@ function App() {
         // Modern dapp broswers
         if (window.ethereum) {
             window.web3 = new Web3(window.ethereum)
-            await window.ethereum.enable()
+            await window.eth_requestAccounts
         }
         // Lagacy dapp broswers
         else if (window.web3) {
