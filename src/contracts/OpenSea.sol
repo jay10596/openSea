@@ -1,45 +1,42 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract Marketplace {
+contract OpenSea {
     // State variables
     string public name;
-    uint public productCount = 0; 
+    uint public nftCount = 0; 
     uint public collectionCount = 0; 
 
     // Equivalent to database
-    struct Product {
+    struct NFT {
         uint id;
         string name;
         string mediaHash;
         uint price;
         address owner;
-        bool purchased;
         uint collection_id;
     }
 
     // Similar to declaring PK for adding data
-    mapping(uint => Product) public products;
+    mapping(uint => NFT) public nfts;
 
-    // Emit event when a product is created
-    event ProductCreated(
+    // Emit event when a NFT is created
+    event NFTMinted(
         uint id,
         string name,
         string mediaHash,
         uint price,
         address owner,
-        bool purchased,
         uint collection_id
     );
 
-    // Emit event when a product is purchased
-    event ProductPurchased(
+    // Emit event when a NFT is purchased
+    event NFTPurchased(
         uint id,
         string name,
         string mediaHash,
         uint price,
         address owner,
-        bool purchased,
         uint collection_id
     );
 
@@ -63,52 +60,49 @@ contract Marketplace {
     );
 
     constructor() {
-        name = "Exotique Marketplace";
+        name = "OpenSea";
 
         // Create a default collection
         createCollection('Default', ''); 
     }
 
-    function createProduct(string memory _name, string memory _mediaHash, uint _price, uint _collection_id) public {
+    function mintNFT(string memory _name, string memory _mediaHash, uint _price, uint _collection_id) public {
         // Validation
         require(bytes(_name).length > 0);
         require(bytes(_mediaHash).length > 0);
         require(_price > 0);
 
         // Update counter
-        productCount ++;
+        nftCount ++;
 
-        // Create a product
-        products[productCount] = Product(productCount, _name, _mediaHash, _price, msg.sender, false, _collection_id);
+        // Create a NFT
+        nfts[nftCount] = NFT(nftCount, _name, _mediaHash, _price, msg.sender, _collection_id);
 
         // Trigger an event (Similar to return)
-        emit ProductCreated(productCount, _name, _mediaHash, _price, msg.sender, false, _collection_id);
+        emit NFTMinted(nftCount, _name, _mediaHash, _price, msg.sender, _collection_id);
     }
 
-    function purchaseProduct(uint _id) public payable {
-        // Fetch product and owner
-        Product memory _product = products[_id];
-        address _owner = _product.owner;
+    function purchaseNFT(uint _id) public payable {
+        // Fetch NFT and owner
+        NFT memory _nft = nfts[_id];
 
         // Validation
-        require(_product.id > 0 && _product.id <= productCount); // Id is valid
-        require(msg.value >= _product.price); // There is enough ETH in transation
-        require(!_product.purchased); // Product is not purchased already
-        require(msg.sender != _owner); // Buyer is not the owner
-
-        // Transfer ownership and update price
-        _product.owner = msg.sender;
-        _product.purchased = true;
-        _product.price = msg.value;
-
-        // Update the actual product in blockchain
-        products[_id] = _product;
+        require(_nft.id > 0 && _nft.id <= nftCount); // Id is valid
+        require(msg.value >= _nft.price); // There is enough ETH in transation
+        require(msg.sender != _nft.owner); // Buyer is not the owner
 
         // Pay the owner
-        payable(_owner).transfer(msg.value);
+        payable(_nft.owner).transfer(msg.value);
+
+        // Transfer ownership and update price
+        _nft.owner = msg.sender;
+        _nft.price = msg.value;
+
+        // Update the actual NFT in blockchain
+        nfts[_id] = _nft;
 
         // Trigger an event
-        emit ProductPurchased(_id, _product.name, _product.mediaHash, _product.price, msg.sender, true, _product.collection_id);
+        emit NFTPurchased(_id, _nft.name, _nft.mediaHash, _nft.price, msg.sender, _nft.collection_id);
     }
 
     function createCollection(string memory _name, string memory _mediaHash) public {
@@ -131,7 +125,7 @@ contract Marketplace {
 /*
 Extra Notes:
     1) Why counter?
-    Solidity doesn't tell us how many products are in Struct. It returns empty vals if you've 5 prods and search for 6. 
+    Solidity doesn't tell us how many NFTs are in Struct. It returns empty vals if you've 5 prods and search for 6. 
 
     2) What is state/public variable?
     Using public converts vaiable into function which can be used globally including console. More like auto increment PK.
@@ -148,8 +142,8 @@ Extra Notes:
     6) Why _ on parameters?
     _ is just for naming convention to differentiate local variables from state variables. 
 
-    7) What is Product memory _product?
-    Creates a duplicate copy of the product that exists in the blockchain and assigns it to the local variable _product. 
+    7) What is NFT memory _nft?
+    Creates a duplicate copy of the NFT that exists in the blockchain and assigns it to the local variable _nft. 
 
     8) What is payable?
     Solidity can't let you transfer money or use metadata(msg) value without payable function. The variable which contains owner address also must have payable.

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-const Marketplace = artifacts.require("Marketplace");
+const OpenSea = artifacts.require("OpenSea");
 
 module.exports = function (deployer) {
-    deployer.deploy(Marketplace);
+    deployer.deploy(OpenSea);
 };
