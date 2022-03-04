@@ -2,12 +2,12 @@ import { configureStore } from '@reduxjs/toolkit';
 import thunk from 'redux-thunk';
 
 import themeReducer from "./reducers/Theme";
-import marketplaceReducer from "./reducers/Marketplace";
+import openSeaReducer from "./reducers/OpenSea";
 
 const Store = configureStore({
     reducer: {
         theme: themeReducer,
-        marketplace: marketplaceReducer
+        openSea: openSeaReducer
     },
     middleware: [thunk]
 })

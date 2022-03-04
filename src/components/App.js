@@ -1,8 +1,8 @@
 import React, { useEffect }  from 'react';
 import Web3 from 'web3';
-import Marketplace from '../build/Marketplace.json';
+import OpenSea from '../build/OpenSea.json';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMarketplace } from '../helpers/reducers/Marketplace'
+import { setOpenSea } from '../helpers/reducers/OpenSea'
 import Router from '../helpers/router';
 
 import Header from './sections/Header';
@@ -12,15 +12,19 @@ import Footer from './sections/Footer';
 // Can't use Redux hooks in a class component
 function App() {    
     const dispatch = useDispatch()
+
+    // Fetch values from the store
+    const user = useSelector((state) => state.openSea.value.user)
+    const loading = useSelector((state) => state.openSea.value.loading)
     const theme = useSelector((state) => state.theme)
-    const marketplace = useSelector((state) => state.marketplace.value)
 
     // Equivalent to componentWillMount()
     useEffect(() => {
         loadWeb3()
-        loadBlockchainData()
+        loadBlockchain()
     })
 
+    // Check valid browser
     const loadWeb3 = async () => {
         // Modern dapp broswers
         if (window.ethereum) {
@@ -29,7 +33,7 @@ function App() {
         }
         // Lagacy dapp broswers
         else if (window.web3) {
-            window.web3 = new Web3(window.web3.currentProvider)
+            window.web3 = new Web3(window.ethereum)
         }
         // No-dapp broswers
         else {
@@ -37,49 +41,54 @@ function App() {
         }
     }
 
-    const loadBlockchainData = async () => {
-        const account = await window.web3.eth.getAccounts() /* Use await while calling a function */
-        const netId = await window.web3.eth.net.getId()
-
-        // Check if smart contract is deployed to correct network(Ganache) 
-        if(Marketplace.networks[netId]) {
-            const marketplace = new window.web3.eth.Contract(Marketplace.abi, Marketplace.networks[netId].address)
-
-            const collectionCount = await marketplace.methods.collectionCount().call() /* https://web3js.readthedocs.io/en/v1.2.11/web3-eth-contract.html#id26 */
-            const collections = []
-
-            for(var j = 1; j <= collectionCount; j++) {
-                const collection = await marketplace.methods.collections(j).call()
-                collections.push(collection)
-            }
-
-            const productCount = await marketplace.methods.productCount().call()
-            const products = []
-
-            for(var i = 1; i <= productCount; i++) {
-                const product = await marketplace.methods.products(i).call()
-                products.push(product)
-            }
-
-            dispatch(setMarketplace({ 
-                account: account[0],
-                marketplace: marketplace,
-                collectionCount: collectionCount,
-                collections: collections,
-                productCount: productCount,
-                products: products,
-                loading: false
-            }))
+    // Load Metamask and fetch data
+    const loadBlockchain = async () => {
+        if(typeof window.ethereum == 'undefined') {
+            window.alert('Please install MetaMask')
         } else {
-            window.alert('Smart contract not deployed to detected network')
-        }
+            const web3 = new Web3(window.ethereum) // Anything to do with web3 is related to MetaMask such as gettting balance
+            const netId = await web3.eth.net.getId() // Network ID - eg: Kovan, Ganache etc.
+            const account = await web3.eth.getAccounts() // Current logged in account - eg: ['0xji2817s82hs']
+            
+            if(typeof account[0] == 'undefined') {
+                window.alert('Please login with MetaMask')
+            } else {
+                const openSea = new window.web3.eth.Contract(OpenSea.abi, OpenSea.networks[netId].address)
+
+                // Fetch albums from Smart Contract
+                const albums = []
+                for(var i = 1; i <= await openSea.methods.nftCount().call(); i++) {
+                    albums.push(await openSea.methods.nfts(i).call())
+                }
+
+                // Fetch subscriptions from Smart Contract
+                const subscriptions = []
+                for(var j = 1; j <= await openSea.methods.collectionCount().call(); j++) {
+                    subscriptions.push(await openSea.methods.collections(j).call())
+                }
+
+                dispatch(setOpenSea({ 
+                    user: {
+                        address: account[0],
+                        eth: await web3.eth.getBalance(account[0]),
+                    },
+                    store: {
+                        contract: openSea,
+                        address: openSea._address,
+                        eth: await web3.eth.getBalance(openSea._address),
+                        nfts: subscriptions,
+                    },
+                    loading: false
+                }))
+            }
+        }        
     }
 
     return (
         <div className="App" >
-            <Header account={marketplace.account} themeColor={theme.color} />
+            <Header user={user} theme={theme} />
 
-            {marketplace.loading 
+            {loading 
                 ? <Loading />
                 : <Router />                    
             }

@@ -9,7 +9,7 @@ import ProductList from '../sections/ProductList';
 function Home() {
     return (
         <main>
-            <Banner />
+            {/* <Banner />
 
             <CollectionForm />
 
@@ -17,7 +17,7 @@ function Home() {
 
             <ProductForm />
 
-            <ProductList />
+            <ProductList /> */}
         </main>
     );
 }

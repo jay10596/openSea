@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProduct } from '../../helpers/reducers/Marketplace';
+import { createProduct } from '../../helpers/reducers/OpenSea';
 import { create } from 'ipfs-http-client';
 
 import SectionHeader from '../reusables/SectionHeader';

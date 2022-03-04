@@ -1,20 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-const marketplaceSlice = createSlice({
-    name: 'marketplace',
+const openSeaSlice = createSlice({
+    name: 'openSea',
     initialState: {
         value: {
-            account: '',
-            marketplace: [],
-            productCount: 0,
-            collectionCount: 0,
-            products: [],
-            collections: [],
-            loading: true
+            user: {
+                address: null,
+                eth: 0,
+            },
+            store: {
+                contract: null,
+                address: null,
+                eth: 0,
+                nfts: [],
+            },
+            loading: false
         }
     },
     reducers: {
-        setMarketplace: (state, action) => {
+        setOpenSea: (state, action) => {
             state.value = action.payload
         },
         createCollection: (state, action) => {
@@ -47,6 +51,6 @@ const marketplaceSlice = createSlice({
     }
 })
 
-export const { setMarketplace, createCollection, createProduct, purchaseProduct } = marketplaceSlice.actions;
+export const { setOpenSea, createCollection, createProduct, purchaseProduct } = openSeaSlice.actions;
 
-export default marketplaceSlice.reducer;
+export default openSeaSlice.reducer;
