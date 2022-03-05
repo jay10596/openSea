@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import { Link } from 'react-router-dom';
-import Button from 'react-bootstrap/Button';
+import { MdOutlineAccountBalanceWallet } from "react-icons/md";
 
 function Drawer() {
     // State variables
@@ -14,7 +13,7 @@ function Drawer() {
     
     return (
         <div>
-            <Button variant="primary" onClick={handleShow}>Wallet</Button>
+            <MdOutlineAccountBalanceWallet onClick={handleShow} size="2rem" />
 
             <Offcanvas show={show} onHide={handleClose} placement="end">
                 <Offcanvas.Header closeButton>

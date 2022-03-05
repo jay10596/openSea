@@ -1,11 +1,10 @@
 import React from 'react';
+import Spinner from 'react-bootstrap/Spinner';
 
-const Loading = () => {
+function Loader() {
     return (
-        <div>
-            Loading...
-        </div>
+        <Spinner animation="grow" variant="alt" />
     );
 }
 
-export default Loading;
+export default Loader;

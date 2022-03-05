@@ -7,14 +7,15 @@ import SectionHeader from '../reusables/SectionHeader';
 
 function NFTForm() {
     const dispatch = useDispatch()
-    const openSea = useSelector((state) => state.marketplace.value)
+    const openSea = useSelector((state) => state.openSea.store)
 
+    // State variables
     const [name, setName] = useState('')
     const [media, setMedia] = useState()
     const [price, setPrice] = useState('')
     const [collection_id, setCollectionID] = useState('1')
 
-    // Binding values
+    // Bind values
     const updateName = (e) => setName(e.target.value)
     const updatePrice = (e) => setPrice(e.target.value.toString())
     const updateMedia = (e) => setMedia(e.target.files[0])

@@ -1,18 +1,15 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { setTheme } from '../../helpers/reducers/Theme';
+import { Link } from 'react-router-dom';
 
+import Icon from '../reusables/Icon'
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { Link } from 'react-router-dom';
-import Button from 'react-bootstrap/Button';
-import Offcanvas from '../reusables/Drawer';
+import ToogleSwitch from '../reusables/ToogleSwitch';
+import Drawer from '../reusables/Drawer';
 
-const Header = (props) => {
-    const dispatch = useDispatch()
-  
+const Header = (props) => {  
     return (
         <header>
             <Navbar collapseOnSelect expand="lg">
@@ -45,11 +42,13 @@ const Header = (props) => {
                                 <Link to="/about">About</Link>
                             </Nav.Item>
 
-                            <Button variant="primary" onClick={() => dispatch(setTheme({ color: props.themeColor === 'light' ? 'dark' : 'light' }))}>
-                                {props.themeColor}
-                            </Button>
+                            <Nav.Item>
+                                <Icon />
+                            </Nav.Item>
 
-                            <Offcanvas />
+                            <ToogleSwitch />
+
+                            <Drawer />
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

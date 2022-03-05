@@ -1,3 +1,12 @@
+body {
+    margin: 0;
+    scroll-behavior: smooth;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    background: white;
+    color: $font-primary;
+}
+
 h1, .h1 {
     font-size: 3rem;
     line-height: 3.25rem;
@@ -34,7 +43,7 @@ h6, .h6 {
     font-weight: 600;
 }
 
-a, .nav-link {
+a, .nav-link, #collasible-nav-dropdown {
     font-weight: 600;
     font-size: 1rem;
     line-height: 1.25rem;
@@ -75,10 +84,12 @@ p {
     line-height: 1.25rem;
 }
 
-span {color: $font-alt;}
+span, .text-alt {color: $font-alt;}
 
 small {
     font-size: 0.5rem;
     line-height: 1rem;
     color: $font-secondary;
 }
+
+svg {color: $font-secondary;}

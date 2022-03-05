@@ -10,14 +10,15 @@ function Home() {
     return (
         <main>
             <Banner />
-
+            
             <CollectionForm />
+{/* 
 
             <CollectionList />
 
             <ProductForm />
 
-            <ProductList />
+            <ProductList /> */}
         </main>
     );
 }

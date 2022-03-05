@@ -6,7 +6,7 @@ import { setOpenSea } from '../helpers/reducers/OpenSea'
 import Router from '../helpers/router';
 
 import Header from './sections/Header';
-import Loading from './reusables/Loader';
+import Loader from './reusables/Loader';
 import Footer from './sections/Footer';
 
 // Can't use Redux hooks in a class component
@@ -14,15 +14,14 @@ function App() {
     const dispatch = useDispatch()
 
     // Fetch values from the store
-    const user = useSelector((state) => state.openSea.value.user)
-    const loading = useSelector((state) => state.openSea.value.loading)
-    const theme = useSelector((state) => state.theme)
+    const user = useSelector((state) => state.openSea.user)
+    const loading = useSelector((state) => state.openSea.loading)
 
     // Equivalent to componentWillMount()
     useEffect(() => {
         loadWeb3()
         loadBlockchain()
-    })
+    }, [])
 
     // Check valid browser
     const loadWeb3 = async () => {
@@ -50,11 +49,12 @@ function App() {
             const netId = await web3.eth.net.getId() // Network ID - eg: Kovan, Ganache etc.
             const account = await web3.eth.getAccounts() // Current logged in account - eg: ['0xji2817s82hs']
             
+            console.log(netId, account[0])
             if(typeof account[0] == 'undefined') {
                 window.alert('Please login with MetaMask')
             } else {
                 const openSea = new window.web3.eth.Contract(OpenSea.abi, OpenSea.networks[netId].address)
-
+                console.log(openSea)
                 // Fetch collections from Smart Contract
                 const collections = []
                 for(let i = 1; i <= await openSea.methods.collectionCount().call(); i++) {
@@ -66,6 +66,7 @@ function App() {
                 for(let i = 1; i <= await openSea.methods.nftCount().call(); i++) {
                     nfts.push(await openSea.methods.nfts(i).call())
                 }
+                console.log(openSea._address)
 
                 dispatch(setOpenSea({ 
                     user: {
@@ -87,10 +88,10 @@ function App() {
 
     return (
         <div className="App" >
-            <Header user={user} theme={theme} />
+            <Header />
 
             {loading 
-                ? <Loading />
+                ? <Loader />
                 : <Router />                    
             }
         

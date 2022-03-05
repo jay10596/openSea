@@ -8,10 +8,11 @@ import SectionHeader from '../reusables/SectionHeader';
 function CollectionForm() {
     const dispatch = useDispatch()
 
+    // State variables
     const [name, setName] = useState('')
     const [media, setMedia] = useState()
 
-    // Binding values
+    // Bind values
     const updateName = (e) => setName(e.target.value)
     const updateMedia = (e) => setMedia(e.target.files[0])
 

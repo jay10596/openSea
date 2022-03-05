@@ -8,7 +8,7 @@ import NoImage from '../../assets/NoImage.jpeg';
 
 function NFTList() {
     const dispatch = useDispatch()
-    const openSea = useSelector((state) => state.openSea.value.store)
+    const openSea = useSelector((state) => state.openSea.store)
 
     return (
         <section>
