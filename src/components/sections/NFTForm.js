@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProduct } from '../../helpers/reducers/OpenSea';
+import { mintNFT } from '../../helpers/reducers/OpenSea';
 import { create } from 'ipfs-http-client';
 
 import SectionHeader from '../reusables/SectionHeader';
 
-function ProductForm() {
+function NFTForm() {
     const dispatch = useDispatch()
-    const marketplace = useSelector((state) => state.marketplace.value)
+    const openSea = useSelector((state) => state.marketplace.value)
 
     const [name, setName] = useState('')
     const [media, setMedia] = useState()
@@ -28,12 +28,12 @@ function ProductForm() {
         const client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
         const uploadedMedia = await client.add(media)
 
-        dispatch(createProduct({name: name, media: uploadedMedia.path, price: window.web3.utils.toWei(price, 'Ether'), collection_id: collection_id}))
+        dispatch(mintNFT({name: name, media: uploadedMedia.path, price: window.web3.utils.toWei(price, 'Ether'), collection_id: collection_id}))
     }
 
     return (
         <section>
-            <SectionHeader heading="Create a product" />
+            <SectionHeader heading="Mint an NFT" />
 
             <form onSubmit={handleSubmit}>
                 <label>
@@ -55,7 +55,7 @@ function ProductForm() {
                     Collection:
 
                     <select name="collection_id" onChange={updateCollectionID} value={collection_id}>
-                        {marketplace.collections.map((collection, key) => {
+                        {openSea.collections.map((collection, key) => {
                             return(
                                 <option key={key} value={collection.id}>{collection.name}</option>
                             )
@@ -69,4 +69,4 @@ function ProductForm() {
     );
 }
 
-export default ProductForm;
+export default NFTForm;

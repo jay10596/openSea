@@ -1,0 +1,84 @@
+h1, .h1 {
+    font-size: 3rem;
+    line-height: 3.25rem;
+    font-weight: 600;
+}
+
+h2, .h2 {
+    font-size: 2.75rem;
+    line-height: 3rem;
+    font-weight: 600;
+}
+
+h3, .h3 {
+    font-size: 2.5rem;
+    line-height: 2.75rem;
+    font-weight: 600;
+}
+
+h4, .h4 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    font-weight: 600;
+}
+
+h5, .h5 {
+    font-size: 2rem;
+    line-height: 2.25rem;
+    font-weight: 600;
+}
+
+h6, .h6 {
+    font-size: 1.75rem;
+    line-height: 2rem;
+    font-weight: 600;
+}
+
+a, .nav-link {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    color: $font-secondary;
+    margin: 0 1.5rem;
+    text-decoration: none;
+}
+
+.btn {
+    padding: 0.75rem 1.25rem;
+    min-width: 10rem;
+    border-radius: $radius;
+    font-weight: 600;
+
+    &-primary {
+        background: $bg-primary;
+        color: white;
+    }
+
+    &-default {
+        background: $bg-default;
+        color: $font-alt;
+        border: $border;
+    }
+
+    &-group {
+        .btn:first-child {margin-right: 1.5rem;}
+    }
+
+    &:hover, &:focus {
+        box-shadow: $shadow;
+        opacity: $opacity;
+    }
+}
+
+p {
+    font-size: 1rem;
+    line-height: 1.25rem;
+}
+
+span {color: $font-alt;}
+
+small {
+    font-size: 0.5rem;
+    line-height: 1rem;
+    color: $font-secondary;
+}

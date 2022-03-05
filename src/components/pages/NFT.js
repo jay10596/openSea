@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-function Product() {
+function NFT() {
     const { id } = useParams() // Route parameter
     const marketplace = useSelector((state) => state.marketplace.value)
 
@@ -16,4 +16,4 @@ function Product() {
     );
 }
 
-export default Product;
+export default NFT;

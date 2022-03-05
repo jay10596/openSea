@@ -55,16 +55,16 @@ function App() {
             } else {
                 const openSea = new window.web3.eth.Contract(OpenSea.abi, OpenSea.networks[netId].address)
 
-                // Fetch albums from Smart Contract
-                const albums = []
-                for(var i = 1; i <= await openSea.methods.nftCount().call(); i++) {
-                    albums.push(await openSea.methods.nfts(i).call())
+                // Fetch collections from Smart Contract
+                const collections = []
+                for(let i = 1; i <= await openSea.methods.collectionCount().call(); i++) {
+                    collections.push(await openSea.methods.collections(i).call())
                 }
 
-                // Fetch subscriptions from Smart Contract
-                const subscriptions = []
-                for(var j = 1; j <= await openSea.methods.collectionCount().call(); j++) {
-                    subscriptions.push(await openSea.methods.collections(j).call())
+                // Fetch NFTs from Smart Contract
+                const nfts = []
+                for(let i = 1; i <= await openSea.methods.nftCount().call(); i++) {
+                    nfts.push(await openSea.methods.nfts(i).call())
                 }
 
                 dispatch(setOpenSea({ 
@@ -76,7 +76,8 @@ function App() {
                         contract: openSea,
                         address: openSea._address,
                         eth: await web3.eth.getBalance(openSea._address),
-                        nfts: subscriptions,
+                        nfts: nfts,
+                        collections: collections
                     },
                     loading: false
                 }))

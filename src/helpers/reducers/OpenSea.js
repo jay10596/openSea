@@ -13,6 +13,7 @@ const openSeaSlice = createSlice({
                 address: null,
                 eth: 0,
                 nfts: [],
+                collections: []
             },
             loading: false
         }
@@ -30,7 +31,7 @@ const openSeaSlice = createSlice({
                     state.value.loading = false
                 })
         },
-        createProduct: (state, action) => {
+        mintNFT: (state, action) => {
             state.value.loading = true
 
             state.value.marketplace.methods.createProduct(action.payload.name, action.payload.media, action.payload.price, action.payload.collection_id)
@@ -39,7 +40,7 @@ const openSeaSlice = createSlice({
                     state.value.loading = false
                 })
         },
-        purchaseProduct: (state, action) => {
+        purchaseNFT: (state, action) => {
             state.value.loading = true
 
             state.value.marketplace.methods.purchaseProduct(action.payload.id)
@@ -51,6 +52,6 @@ const openSeaSlice = createSlice({
     }
 })
 
-export const { setOpenSea, createCollection, createProduct, purchaseProduct } = openSeaSlice.actions;
+export const { setOpenSea, createCollection, mintNFT, purchaseNFT } = openSeaSlice.actions;
 
 export default openSeaSlice.reducer;
