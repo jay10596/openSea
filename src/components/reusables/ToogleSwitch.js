@@ -8,7 +8,7 @@ function ToogleSwitch() {
     const dispatch = useDispatch()
 
     const theme = useSelector((state) => state.theme)
-
+    
     // State variables
     const [checked, setChecked] = useState(false);
 
@@ -19,7 +19,14 @@ function ToogleSwitch() {
     };
     
     return (
-        <Switch onChange={handleChange} checked={checked} />
+        <Switch 
+            onChange={handleChange} 
+            checked={checked} 
+            offColor={'#454545'}
+            onColor={'#2081E2'}
+            uncheckedIcon={false}
+            checkedIcon={false}
+        />
     );
 }
 

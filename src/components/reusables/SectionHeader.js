@@ -2,9 +2,7 @@ import React from 'react';
 
 const SectionHeader = (props) => {
     return (
-        <div>
-            <h1>{props.heading}</h1>
-        </div>
+        <h6 className="text-center">{props.heading} <span>{props.highlight}</span> </h6>
     );
 };
 

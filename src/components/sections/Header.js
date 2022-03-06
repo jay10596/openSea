@@ -1,56 +1,53 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Container, Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
 import Icon from '../reusables/Icon'
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import ToogleSwitch from '../reusables/ToogleSwitch';
 import Drawer from '../reusables/Drawer';
 
-const Header = (props) => {  
+function Header() {
     return (
         <header>
-            <Navbar collapseOnSelect expand="lg">
+            <Navbar expand="lg">
                 <Container>
                     <Navbar.Brand href="/">OpenSea</Navbar.Brand>
 
-                    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-
-                    <Navbar.Collapse id="responsive-navbar-nav" className="justify-content-end">
-                        <Nav className="align-items-center">
-                            <NavDropdown title="Categories" id="collasible-nav-dropdown">
-                                <NavDropdown.Item>
-                                    <Link to="/collections">Collections</Link>
-                                </NavDropdown.Item>
-
-                                <NavDropdown.Item>                        
-                                    <Link to="/nfts">NFTs</Link>
-                                </NavDropdown.Item>
-                            </NavDropdown>
-                            
-                            <Nav.Item>                        
+                    <Nav className="justify-content-end align-items-center">
+                        <NavDropdown title="Categories" id="collasible-nav-dropdown">
+                            <NavDropdown.Item>
                                 <Link to="/collections">Collections</Link>
-                            </Nav.Item>
-                            
-                            <Nav.Item>                        
+                            </NavDropdown.Item>
+
+                            <NavDropdown.Item>
                                 <Link to="/nfts">NFTs</Link>
-                            </Nav.Item>
-                            
-                            <Nav.Item>                        
-                                <Link to="/about">About</Link>
-                            </Nav.Item>
+                            </NavDropdown.Item>
+                        </NavDropdown>
 
-                            <Nav.Item>
-                                <Icon />
-                            </Nav.Item>
+                        <Nav.Item>
+                            <Link to="/collections">Collections</Link>
+                        </Nav.Item>
 
+                        <Nav.Item>
+                            <Link to="/nfts">NFTs</Link>
+                        </Nav.Item>
+
+                        <Nav.Item>
+                            <Link to="/about">About</Link>
+                        </Nav.Item>
+
+                        <Nav.Item>
+                            <Icon />
+                        </Nav.Item>
+
+                        <Nav.Item>
                             <ToogleSwitch />
+                        </Nav.Item>
 
+                        <Nav.Item>
                             <Drawer />
-                        </Nav>
-                    </Navbar.Collapse>
+                        </Nav.Item>
+                    </Nav>
                 </Container>
             </Navbar>
         </header>

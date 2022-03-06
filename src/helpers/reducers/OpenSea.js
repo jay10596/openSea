@@ -1,4 +1,4 @@
-import { createSlice, current } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit"
 
 const openSeaSlice = createSlice({
     name: 'openSea',
@@ -8,7 +8,7 @@ const openSeaSlice = createSlice({
             eth: 0,
         },
         store: {
-            contract: null,
+            contract: {},
             address: null,
             eth: 0,
             nfts: [],
@@ -18,16 +18,14 @@ const openSeaSlice = createSlice({
     },
     reducers: {
         setOpenSea: (state, action) => {
-            return {
-                ...state,
-                user: action.payload.user,
-                store: action.payload.store,
-                loading: action.payload.loading
-            }
+            /*
+            Can't use state = action.payload.
+            It only stores data as draft. We have to return it to actualy store the data.
+            https://redux-toolkit.js.org/usage/immer-reducers
+            */
+            return action.payload
         },
         createCollection: (state, action) => {
-            state = current(state)
-
             state.loading = true
 
             state.store.contract.methods.createCollection(action.payload.name, action.payload.media)

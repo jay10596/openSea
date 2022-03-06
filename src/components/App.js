@@ -49,12 +49,11 @@ function App() {
             const netId = await web3.eth.net.getId() // Network ID - eg: Kovan, Ganache etc.
             const account = await web3.eth.getAccounts() // Current logged in account - eg: ['0xji2817s82hs']
             
-            console.log(netId, account[0])
             if(typeof account[0] == 'undefined') {
                 window.alert('Please login with MetaMask')
             } else {
                 const openSea = new window.web3.eth.Contract(OpenSea.abi, OpenSea.networks[netId].address)
-                console.log(openSea)
+
                 // Fetch collections from Smart Contract
                 const collections = []
                 for(let i = 1; i <= await openSea.methods.collectionCount().call(); i++) {
@@ -66,7 +65,6 @@ function App() {
                 for(let i = 1; i <= await openSea.methods.nftCount().call(); i++) {
                     nfts.push(await openSea.methods.nfts(i).call())
                 }
-                console.log(openSea._address)
 
                 dispatch(setOpenSea({ 
                     user: {

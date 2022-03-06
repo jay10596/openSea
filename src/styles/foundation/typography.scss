@@ -5,6 +5,8 @@ body {
     font-weight: 400;
     background: white;
     color: $font-primary;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 h1, .h1 {
@@ -48,7 +50,6 @@ a, .nav-link, #collasible-nav-dropdown {
     font-size: 1rem;
     line-height: 1.25rem;
     color: $font-secondary;
-    margin: 0 1.5rem;
     text-decoration: none;
 }
 
@@ -92,4 +93,8 @@ small {
     color: $font-secondary;
 }
 
-svg {color: $font-secondary;}
+svg {
+    color: $font-secondary;
+}
+
+img {width: 100%;}

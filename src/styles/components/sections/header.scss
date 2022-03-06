@@ -1,0 +1,15 @@
+header {
+    nav {
+        .react-switch-bg {margin: 1rem 1.5rem;}
+
+        .nav-item {
+            &:nth-of-type(5n) {
+                svg {
+                    padding: 0.075rem;
+                    border: 0.125rem solid $font-alt;
+                    border-radius: 50%;
+                }
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import CollectionList from '../sections/CollectionList';
+import CollectionList from '../sections/FeaturedCollections';
 
 function Collections() {
 

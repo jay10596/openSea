@@ -2,23 +2,22 @@ import React from 'react';
 
 import Banner from '../sections/Banner';
 import CollectionForm from '../sections/CollectionForm';
-import CollectionList from '../sections/CollectionList';
-import ProductForm from '../sections/NFTForm';
-import ProductList from '../sections/NFTList';
+import FeaturedCollections from '../sections/FeaturedCollections';
+import NFTForm from '../sections/NFTForm';
+import NFTList from '../sections/NFTList';
 
 function Home() {
     return (
         <main>
             <Banner />
-            
+
             <CollectionForm />
-{/* 
 
-            <CollectionList />
+            <FeaturedCollections />
 
-            <ProductForm />
+            {/* <NFTForm /> */}
 
-            <ProductList /> */}
+            {/* <NFTList /> */}
         </main>
     );
 }
