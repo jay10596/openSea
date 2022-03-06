@@ -14,6 +14,8 @@ contract OpenSea {
         string mediaHash;
         uint price;
         address owner;
+        uint volume_traded;
+        uint timestamp;
         uint collection_id;
     }
 
@@ -27,6 +29,8 @@ contract OpenSea {
         string mediaHash,
         uint price,
         address owner,
+        uint volume_traded,
+        uint timestamp,
         uint collection_id
     );
 
@@ -37,6 +41,8 @@ contract OpenSea {
         string mediaHash,
         uint price,
         address owner,
+        uint volume_traded,
+        uint timestamp,
         uint collection_id
     );
 
@@ -76,10 +82,10 @@ contract OpenSea {
         nftCount ++;
 
         // Create a NFT
-        nfts[nftCount] = NFT(nftCount, _name, _mediaHash, _price, msg.sender, _collection_id);
+        nfts[nftCount] = NFT(nftCount, _name, _mediaHash, _price, msg.sender, 0, block.timestamp, _collection_id);
 
         // Trigger an event (Similar to return)
-        emit NFTMinted(nftCount, _name, _mediaHash, _price, msg.sender, _collection_id);
+        emit NFTMinted(nftCount, _name, _mediaHash, _price, msg.sender, 0, block.timestamp, _collection_id);
     }
 
     function purchaseNFT(uint _id) public payable {
@@ -94,15 +100,17 @@ contract OpenSea {
         // Pay the owner
         payable(_nft.owner).transfer(msg.value);
 
-        // Transfer ownership and update price
+        // Transfer ownership and update price, volume and timestamp
         _nft.owner = msg.sender;
         _nft.price = msg.value;
+        _nft.volume_traded += 1;
+        _nft.timestamp = block.timestamp;
 
         // Update the actual NFT in blockchain
         nfts[_id] = _nft;
 
         // Trigger an event
-        emit NFTPurchased(_id, _nft.name, _nft.mediaHash, _nft.price, msg.sender, _nft.collection_id);
+        emit NFTPurchased(_id, _nft.name, _nft.mediaHash, _nft.price, msg.sender, _nft.volume_traded, block.timestamp, _nft.collection_id);
     }
 
     function createCollection(string memory _name, string memory _mediaHash) public {

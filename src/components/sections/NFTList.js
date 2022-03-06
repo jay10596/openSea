@@ -8,13 +8,13 @@ import NoImage from '../../assets/NoImage.jpeg';
 
 function NFTList() {
     const dispatch = useDispatch()
-    const openSea = useSelector((state) => state.openSea.store)
+    const store = useSelector((state) => state.openSea.store)
 
     return (
         <section>
             <SectionHeader heading="Featured nfts" />
 
-            {openSea.nfts.map((nft, key) => {
+            {store.nfts.map((nft, key) => {
                 return (
                     <Link to={`/nfts/${nft.id}`} key={key}>
                         <div>
@@ -26,12 +26,9 @@ function NFTList() {
                             {nft.name}
                             {window.web3.utils.fromWei(nft.price.toString(), 'Ether')} ETH
                             {nft.owner}
-                            {openSea.collections[nft.collection_id - 1].name}
+                            {store.collections[nft.collection_id - 1].name}
 
-                            {nft.purchased || nft.owner === openSea.account 
-                                ? null
-                                : <button onClick={() => dispatch(purchaseNFT({id: nft.id, price: nft.price}))}>Buy</button>
-                            }
+                            <button onClick={() => dispatch(purchaseNFT({id: nft.id, price: nft.price}))}>Buy</button>
                         </div>
                     </Link>
                 )

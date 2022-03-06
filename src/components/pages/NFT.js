@@ -4,13 +4,13 @@ import { useSelector } from 'react-redux';
 
 function NFT() {
     const { id } = useParams() // Route parameter
-    const marketplace = useSelector((state) => state.marketplace.value)
+    const store = useSelector((state) => state.openSea.store)
 
     return (
         <main>
-            {id > marketplace.products.length
-                ? <Navigate to='/products'/>
-                : <h1>{marketplace.products[id - 1].name}</h1>
+            {id > store.nfts.length
+                ? <Navigate to='/nfts'/>
+                : <h1>{store.nfts[id - 1].name}</h1>
             }
         </main>
     );

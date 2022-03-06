@@ -7,7 +7,7 @@ import SectionHeader from '../reusables/SectionHeader';
 import CollectionCard from '../reusables/CollectionCard';
 
 function FeaturedCollections() {
-    const openSea = useSelector((state) => state.openSea.store)
+    const store = useSelector((state) => state.openSea.store)
     const settings = {
         dots: true,
         arrows: true,
@@ -23,7 +23,7 @@ function FeaturedCollections() {
                 <SectionHeader heading="Notable" highlight="Drops" />
 
                 <Slider {...settings}>
-                    {openSea.collections.map((collection, key) => {
+                    {store.collections.map((collection, key) => {
                         return (
                             <CollectionCard collection={collection} key={key} />
                         )

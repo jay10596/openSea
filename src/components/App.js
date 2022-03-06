@@ -21,7 +21,7 @@ function App() {
     useEffect(() => {
         loadWeb3()
         loadBlockchain()
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Check valid browser
     const loadWeb3 = async () => {

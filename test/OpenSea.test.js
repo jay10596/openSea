@@ -16,7 +16,7 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
     })
 
     describe('OpenSea smart contract is deployed', () => {
-        let collection, address, name
+        let collection, address, name, block
 
         before(async () => {
             collectionCount = await openSea.collectionCount()
@@ -50,10 +50,11 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
 
     describe('Owner mints a NFT', async () => {
         before(async () => {
-            result = await openSea.mintNFT('Bored Ape #42', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner })
+            result = await openSea.mintNFT('Bored Ape #42', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('2', 'Ether'), collectionCount, { from: owner })
             event = result.logs[0].args
-
+            
             nftCount = await openSea.nftCount()
+            block = await web3.eth.getBlock('latest')
         })
 
         describe('Success:', async () => {
@@ -68,18 +69,27 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
             })
                 
             it('should have a price', async () => {
-                assert.equal(event.price, '1000000000000000000', 'has a price in ETH')
+                assert.equal(Number(event.price), web3.utils.toWei('2', 'Ether'), 'has a price in ETH')
             })
 
             it('should have a owner', async () => {
                 assert.equal(event.owner, owner, 'has an owner')
             })
+
+            it('should have 0 traded volume', async () => {
+                assert.equal(event.volume_traded, 0, 'has not been traded yet')
+            })
+
+            it('should have a timestamp', async () => {
+                assert.equal(Number(event.timestamp), Number(block.timestamp), 'has a timestamp')
+                assert.isTrue(Number(event.timestamp) > 0)
+            })
         })
         
         describe('Failure:', async () => {
             it('should NOT have empty name or media', async () => {
-                await openSea.mintNFT('', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
-                await openSea.mintNFT('Bored Ape #42', '', web3.utils.toWei('1', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
+                await openSea.mintNFT('', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('2', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
+                await openSea.mintNFT('Bored Ape #42', '', web3.utils.toWei('2', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
 
                 assert.equal(nftCount, 1)
             })
@@ -117,7 +127,7 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
             })
                 
             it('should have a price', async () => {
-                assert.equal(nft.price, '1000000000000000000', 'has a price in ETH')
+                assert.equal(nft.price, web3.utils.toWei('2', 'Ether'), 'has a price in ETH')
             })
 
             it('should have a owner', async () => {
@@ -135,14 +145,18 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
     })
 
     describe('Buyer purchases a NFT', async () => {
-        let ownerOldBalance, buyerOldBalance, price
+        let nft, ownerOldBalance, buyerOldBalance
 
         before(async () => {
-            ownerOldBalance = await web3.eth.getBalance(owner) // Before buying
-            buyerOldBalance = await web3.eth.getBalance(buyer) // Before buying
+            // Before purchasing
+            ownerOldBalance = await web3.eth.getBalance(owner)
+            buyerOldBalance = await web3.eth.getBalance(buyer)
+            nft = await openSea.nfts(nftCount)
 
             result = await openSea.purchaseNFT(nftCount, { from: buyer, value: web3.utils.toWei('2', 'Ether') })
             event = result.logs[0].args
+
+            block = await web3.eth.getBlock('latest')
         })
 
         describe('Success:', async () => {
@@ -154,6 +168,16 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
 
             it('should transfer ownership', async () => {
                 assert.equal(event.owner, buyer, 'has transfered ownership to the buyer')
+            })
+
+            it('should update traded volume', async () => {
+                assert.equal(Number(event.volume_traded), 1, 'has updated traded volume')
+                assert.isTrue(Number(event.volume_traded) > Number(nft.volume_traded), 'has increased traded volume than before')
+            })
+
+            it('should update timestamp', async () => {
+                assert.equal(Number(event.timestamp), Number(block.timestamp), 'has updated timestamp')
+                assert.isTrue(Number(event.timestamp) > Number(nft.timestamp), 'has much more recent timestamp')
             })
         })
         

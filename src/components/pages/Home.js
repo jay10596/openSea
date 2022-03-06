@@ -15,9 +15,9 @@ function Home() {
 
             <FeaturedCollections />
 
-            {/* <NFTForm /> */}
+            <NFTForm />
 
-            {/* <NFTList /> */}
+            <NFTList />
         </main>
     );
 }

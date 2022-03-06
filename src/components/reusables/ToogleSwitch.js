@@ -10,12 +10,12 @@ function ToogleSwitch() {
     const theme = useSelector((state) => state.theme)
     
     // State variables
-    const [checked, setChecked] = useState(false);
+    const [checked, setChecked] = useState(theme.light);
 
     // Bind values
     const handleChange = () => {
         setChecked(!checked)
-        dispatch(setTheme({ color: theme === 'light' ? 'dark' : 'light' }))
+        dispatch(setTheme({ mode: !checked }))
     };
     
     return (

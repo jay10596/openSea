@@ -37,8 +37,8 @@ const openSeaSlice = createSlice({
         mintNFT: (state, action) => {
             state.loading = true
             
-            state.store.contract.methods.createProduct(action.payload.name, action.payload.media, action.payload.price, action.payload.collection_id)
-                .send({ from: state.account })
+            state.store.contract.methods.mintNFT(action.payload.name, action.payload.media, action.payload.price, action.payload.collection_id)
+                .send({ from: state.user.address })
                 .on('receipt', (receipt) => {
                     state.loading = false
                 })
@@ -46,8 +46,8 @@ const openSeaSlice = createSlice({
         purchaseNFT: (state, action) => {
             state.loading = true
 
-            state.store.contract.methods.purchaseProduct(action.payload.id)
-                .send({ from: state.account, value: action.payload.price })
+            state.store.contract.methods.purchaseNFT(action.payload.id)
+                .send({ from: state.user.address, value: action.payload.price })
                 .on('receipt', (receipt) => {
                     state.loading = false
                 })
