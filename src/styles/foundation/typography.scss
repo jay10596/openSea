@@ -10,38 +10,38 @@ body {
 }
 
 h1, .h1 {
-    font-size: 3rem;
-    line-height: 3.25rem;
-    font-weight: 600;
-}
-
-h2, .h2 {
     font-size: 2.75rem;
     line-height: 3rem;
     font-weight: 600;
 }
 
-h3, .h3 {
+h2, .h2 {
     font-size: 2.5rem;
     line-height: 2.75rem;
     font-weight: 600;
 }
 
-h4, .h4 {
+h3, .h3 {
     font-size: 2.25rem;
     line-height: 2.5rem;
     font-weight: 600;
 }
 
-h5, .h5 {
+h4, .h4 {
     font-size: 2rem;
     line-height: 2.25rem;
     font-weight: 600;
 }
 
-h6, .h6 {
+h5, .h5 {
     font-size: 1.75rem;
     line-height: 2rem;
+    font-weight: 600;
+}
+
+h6, .h6 {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
     font-weight: 600;
 }
 
@@ -67,7 +67,7 @@ a, .nav-link, #collasible-nav-dropdown {
     &-default {
         background: $bg-default;
         color: $font-alt;
-        border: $border;
+        border: $border-primary;
     }
 
     &-group {
@@ -81,8 +81,9 @@ a, .nav-link, #collasible-nav-dropdown {
 }
 
 p {
-    font-size: 1rem;
+    font-size: 0.875rem;
     line-height: 1.25rem;
+    font-weight: 400;
 }
 
 span, .text-alt {color: $font-alt;}

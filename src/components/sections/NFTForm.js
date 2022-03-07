@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { mintNFT } from '../../helpers/reducers/OpenSea';
-import { create } from 'ipfs-http-client';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { mintNFT } from "../../helpers/reducers/OpenSea";
+import { create } from "ipfs-http-client";
 
-import SectionHeader from '../reusables/SectionHeader';
+import SectionHeader from "../reusables/SectionHeader";
 
 function NFTForm() {
     const dispatch = useDispatch()
     const openSea = useSelector((state) => state.openSea.store)
 
     // State variables
-    const [name, setName] = useState('')
+    const [name, setName] = useState("")
     const [media, setMedia] = useState()
-    const [price, setPrice] = useState('')
-    const [collection_id, setCollectionID] = useState('1')
+    const [price, setPrice] = useState("")
+    const [collection_id, setCollectionID] = useState("1")
 
     // Bind values
     const updateName = (e) => setName(e.target.value)
@@ -26,10 +26,10 @@ function NFTForm() {
         e.preventDefault()
 
         // Upload media on IPFS and get Hash
-        const client = create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
+        const client = create({ host: "ipfs.infura.io", port: "5001", protocol: "https" })
         const uploadedMedia = await client.add(media)
 
-        dispatch(mintNFT({name: name, media: uploadedMedia.path, price: window.web3.utils.toWei(price, 'Ether'), collection_id: collection_id}))
+        dispatch(mintNFT({name: name, media: uploadedMedia.path, price: window.web3.utils.toWei(price, "Ether"), collection_id: collection_id}))
     }
 
     return (

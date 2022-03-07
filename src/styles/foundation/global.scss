@@ -1,7 +1,25 @@
-section {
-    padding: 6rem 0;
-}
-
 .nav-item {
     margin: 1rem 1.5rem;
+}
+
+section, .section {
+    padding: 6rem 0;
+
+    &-header {padding: 3rem 0;}
+
+    a:hover {text-decoration: none;}
+}
+
+.slick-slider {
+    svg {
+        color: gray;
+        background: white;
+        border-radius: 50%;
+        border: 1px solid lightgray;
+        width: 3rem;
+        height: 3rem;
+        margin: 2rem 1rem;
+        padding: 0.875rem;
+        z-index: 1;
+    }
 }

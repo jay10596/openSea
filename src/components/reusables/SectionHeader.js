@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
 const SectionHeader = (props) => {
     return (
-        <h6 className="text-center">{props.heading} <span>{props.highlight}</span> </h6>
+        <h5 className="section-header text-center">{props.heading} <span>{props.highlight}</span></h5>
     );
 };
 

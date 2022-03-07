@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setTheme } from '../../helpers/reducers/Theme';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setTheme } from "../../helpers/reducers/Theme";
 
 import Switch from "react-switch";
 
@@ -22,8 +22,8 @@ function ToogleSwitch() {
         <Switch 
             onChange={handleChange} 
             checked={checked} 
-            offColor={'#454545'}
-            onColor={'#2081E2'}
+            offColor={"#454545"}
+            onColor={"#2081E2"}
             uncheckedIcon={false}
             checkedIcon={false}
         />

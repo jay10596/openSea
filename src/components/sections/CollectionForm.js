@@ -29,20 +29,20 @@ function CollectionForm() {
 
     return (
         <section>
-            <SectionHeader heading="Create a collection" />
+            <SectionHeader heading='Create a collection' />
 
             <form onSubmit={handleSubmit}>
                 <label>
                     Name:
-                    <input type="text" name="name" value={name} onChange={updateName} />
+                    <input type='text' name='name' value={name} onChange={updateName} />
                 </label>
 
                 <label>
                     File Upload:
-                    <input type="file" name="media" onChange={updateMedia} />
+                    <input type='file' name='media' onChange={updateMedia} />
                 </label>
 
-                <input type="submit" value="Submit" />
+                <input type='submit' value='Submit' />
             </form>
         </section>
     );

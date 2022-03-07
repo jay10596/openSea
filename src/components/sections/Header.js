@@ -1,10 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Container, Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Container, Navbar, Nav, NavDropdown } from "react-bootstrap";
 
-import Icon from '../reusables/Icon'
-import ToogleSwitch from '../reusables/ToogleSwitch';
-import Drawer from '../reusables/Drawer';
+import Icon from "../reusables/Icon"
+import ToogleSwitch from "../reusables/ToogleSwitch";
+import Drawer from "../reusables/Drawer";
 
 function Header() {
     return (
