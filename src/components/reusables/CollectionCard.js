@@ -15,7 +15,7 @@ const CollectionCard = (props) => {
                     alt={props.collection.name}
                 />
 
-                <div className="collection-card_content text-white">
+                <div className="collection-card_content">
                     <h6>{props.collection.name}</h6>
                     <p>Watch UFC 272 live on pay-per-view with ESPN for only $40 a month.</p>
                 </div>

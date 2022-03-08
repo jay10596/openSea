@@ -4,7 +4,7 @@ import Banner from '../sections/Banner';
 import CollectionForm from '../sections/CollectionForm';
 import FeaturedCollections from '../sections/FeaturedCollections';
 import NFTForm from '../sections/NFTForm';
-import NFTList from '../sections/NFTList';
+import FeaturedNFTs from '../sections/FeaturedNFTs';
 
 function Home() {
     return (
@@ -17,7 +17,7 @@ function Home() {
 
             <NFTForm />
 
-            <NFTList />
+            <FeaturedNFTs />
         </main>
     );
 }

@@ -1,5 +1,5 @@
 .nav-item {
-    margin: 1rem 1.5rem;
+    margin: 1rem 0 1rem 3rem;
 }
 
 section, .section {
@@ -10,16 +10,40 @@ section, .section {
     a:hover {text-decoration: none;}
 }
 
-.slick-slider {
-    svg {
-        color: gray;
-        background: white;
-        border-radius: 50%;
-        border: 1px solid lightgray;
-        width: 3rem;
-        height: 3rem;
-        margin: 2rem 1rem;
-        padding: 0.875rem;
-        z-index: 1;
+.slick {
+    &-slider {
+        .slick-arrow {
+            color: gray;
+            background: white;
+            border-radius: 50%;
+            border: $border-alt;
+            width: 3rem;
+            height: 3rem;
+            margin: 0 1rem;
+            padding: 0.875rem;
+            z-index: 1;
+
+            &:hover {box-shadow: $shadow;}
+        }
+    }
+
+    &-slide {
+        padding: 1rem;
+    }
+
+    &-dots {
+        &.dot {
+            button::before {
+                color: $sky;
+                opacity: 0.3;
+            } 
+
+            .slick-active {
+                button::before {
+                    color: $sky;
+                    opacity: 1;
+                } 
+            }
+        }
     }
 }

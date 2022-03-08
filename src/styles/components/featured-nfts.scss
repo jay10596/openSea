@@ -1,0 +1,43 @@
+.featured-nfts {
+    .nft-card {
+        position: relative;
+        border-radius: $radius;
+        overflow: hidden;
+        border: $border-alt;
+
+        &_media {
+            object-fit: cover;
+            height: 12.5rem;
+        }
+
+        &_logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 3.25rem;
+            height: 3.25rem;
+            border-radius: 50%;
+            padding: 0.125rem;
+            border: $border-alt;
+            background: white;
+        }
+    
+        &_content {
+            height: 12.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+
+            p {margin: 1rem 0 0;}
+
+            svg {color: $font-alt;}
+        }
+
+        &:hover {box-shadow: $shadow;}
+    }
+
+    svg {top: 50%;}
+}

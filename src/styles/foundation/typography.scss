@@ -5,8 +5,6 @@ body {
     font-weight: 400;
     background: white;
     color: $font-primary;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 h1, .h1 {
@@ -81,12 +79,14 @@ a, .nav-link, #collasible-nav-dropdown {
 }
 
 p {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
     font-weight: 400;
 }
 
 span, .text-alt {color: $font-alt;}
+
+b, strong {color: $font-primary;}
 
 small {
     font-size: 0.5rem;

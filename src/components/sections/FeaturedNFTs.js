@@ -5,9 +5,9 @@ import Slider from "react-slick";
 
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import SectionHeader from "../reusables/SectionHeader";
-import CollectionCard from "../reusables/CollectionCard";
+import NFTCard from "../reusables/NFTCard";
 
-function FeaturedCollections() {
+function FeaturedNFTs() {
     const store = useSelector((state) => state.openSea.store)
     const settings = {
         dots: true,
@@ -21,15 +21,15 @@ function FeaturedCollections() {
     }
 
     return (
-        <section className="featured-collections">
+        <section className="featured-nfts">
             <Container>
-                <SectionHeader heading="Notable" highlight="Drops" />
+                <SectionHeader heading="Latest" highlight="NFTS" />
 
                 <Slider {...settings}>
-                    {store.collections.map((collection, key) => {
+                    {store.nfts.map((nft, key) => {
                         return (
                             <div key={key}>
-                                <CollectionCard collection={collection} />
+                                <NFTCard nft={nft} />
                             </div>
                         )
                     })}
@@ -39,4 +39,4 @@ function FeaturedCollections() {
     );
 }
 
-export default FeaturedCollections;
+export default FeaturedNFTs;
