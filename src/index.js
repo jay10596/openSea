@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import Store from './helpers/store';
+import Animation from './helpers/animation';
+
 import App from './components/App';
-import './styles/App.scss'
+import './styles/App.scss';
 
 ReactDOM.render(
     <React.StrictMode >

@@ -33,7 +33,7 @@ function NFTForm() {
     }
 
     return (
-        <section>
+        <section data-aos="fade-up">
             <SectionHeader heading="Mint an NFT" />
 
             <form onSubmit={handleSubmit}>

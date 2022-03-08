@@ -23,7 +23,10 @@ section, .section {
             padding: 0.875rem;
             z-index: 1;
 
-            &:hover {box-shadow: $shadow;}
+            &:hover {
+                color: gray;
+                box-shadow: $shadow;
+            }
         }
     }
 
