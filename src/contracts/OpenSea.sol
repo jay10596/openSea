@@ -11,8 +11,10 @@ contract OpenSea {
     struct NFT {
         uint id;
         string name;
+        string description;
         string mediaHash;
         uint price;
+        address minter;
         address owner;
         uint volume_traded;
         uint timestamp;
@@ -26,8 +28,10 @@ contract OpenSea {
     event NFTMinted(
         uint id,
         string name,
+        string description,
         string mediaHash,
         uint price,
+        address minter,
         address owner,
         uint volume_traded,
         uint timestamp,
@@ -38,8 +42,10 @@ contract OpenSea {
     event NFTPurchased(
         uint id,
         string name,
+        string description,
         string mediaHash,
         uint price,
+        address minter,
         address owner,
         uint volume_traded,
         uint timestamp,
@@ -50,7 +56,9 @@ contract OpenSea {
     struct Collection {
         uint id;
         string name;
+        string description;
         string mediaHash;
+        string coverHash;
         address owner;
     }
 
@@ -61,7 +69,9 @@ contract OpenSea {
     event CollectionCreated(
         uint id,
         string name,
+        string description,
         string mediaHash,
+        string coverHash,
         address owner
     );
 
@@ -69,10 +79,10 @@ contract OpenSea {
         name = "OpenSea";
 
         // Create a default collection
-        createCollection('Default', ''); 
+        createCollection('Default', '', '', ''); 
     }
 
-    function mintNFT(string memory _name, string memory _mediaHash, uint _price, uint _collection_id) public {
+    function mintNFT(string memory _name, string memory _description, string memory _mediaHash, uint _price, uint _collection_id) public {
         // Validation
         require(bytes(_name).length > 0);
         require(bytes(_mediaHash).length > 0);
@@ -82,10 +92,10 @@ contract OpenSea {
         nftCount ++;
 
         // Create a NFT
-        nfts[nftCount] = NFT(nftCount, _name, _mediaHash, _price, msg.sender, 0, block.timestamp, _collection_id);
+        nfts[nftCount] = NFT(nftCount, _name, _description, _mediaHash, _price, msg.sender, msg.sender, 0, block.timestamp, _collection_id);
 
         // Trigger an event (Similar to return)
-        emit NFTMinted(nftCount, _name, _mediaHash, _price, msg.sender, 0, block.timestamp, _collection_id);
+        emit NFTMinted(nftCount, _name, _description, _mediaHash, _price, msg.sender, msg.sender, 0, block.timestamp, _collection_id);
     }
 
     function purchaseNFT(uint _id) public payable {
@@ -97,12 +107,21 @@ contract OpenSea {
         require(msg.value >= _nft.price); // There is enough ETH in transation
         require(msg.sender != _nft.owner); // Buyer is not the owner
 
-        // Pay the owner
-        payable(_nft.owner).transfer(msg.value);
+        uint commission = (msg.value * 25) / 1000; // 2.5% OpenSea service fee on each transaction
+        uint royalty = (msg.value * 50) / 1000; // 5% royalty to original artist
+        uint price = msg.value - (commission + royalty); // Actual sell price
 
-        // Transfer ownership and update price, volume and timestamp
+        // Pay 2.5% service fee to OpenSea
+        payable(address(this)).transfer(commission);
+
+        // Pay 5% royalty to minter
+        payable(_nft.minter).transfer(royalty);
+
+        // Pay the remaining sell price to owner
+        payable(_nft.owner).transfer(price);
+
+        // Transfer ownership, volume and timestamp
         _nft.owner = msg.sender;
-        _nft.price = msg.value;
         _nft.volume_traded += 1;
         _nft.timestamp = block.timestamp;
 
@@ -110,10 +129,10 @@ contract OpenSea {
         nfts[_id] = _nft;
 
         // Trigger an event
-        emit NFTPurchased(_id, _nft.name, _nft.mediaHash, _nft.price, msg.sender, _nft.volume_traded, block.timestamp, _nft.collection_id);
+        emit NFTPurchased(_id, _nft.name, _nft.description, _nft.mediaHash, _nft.price, _nft.owner, msg.sender, _nft.volume_traded, block.timestamp, _nft.collection_id);
     }
 
-    function createCollection(string memory _name, string memory _mediaHash) public {
+    function createCollection(string memory _name, string memory _description, string memory _mediaHash, string memory _coverHash) public {
         // Validation
         require(bytes(_name).length > 0);
 
@@ -121,10 +140,10 @@ contract OpenSea {
         collectionCount ++;
 
         // Create a collection
-        collections[collectionCount] = Collection(collectionCount, _name, _mediaHash, msg.sender);
+        collections[collectionCount] = Collection(collectionCount, _name, _description, _mediaHash, _coverHash, msg.sender);
 
         // Trigger an event (Similar to return)
-        emit CollectionCreated(collectionCount, _name, _mediaHash, msg.sender);
+        emit CollectionCreated(collectionCount, _name, _description, _mediaHash,_coverHash, msg.sender);
     }
 }
 

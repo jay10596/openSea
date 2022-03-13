@@ -21,7 +21,7 @@ function App() {
     useEffect(() => {
         loadWeb3()
         loadBlockchain()
-    })
+    }, [])
 
     // Check valid browser
     const loadWeb3 = async () => {
@@ -65,6 +65,29 @@ function App() {
                 for(let i = 1; i <= await openSea.methods.nftCount().call(); i++) {
                     nfts.push(await openSea.methods.nfts(i).call())
                 }
+
+                // Fetch requests with API keys must have domain added in proxy of package.json
+                fetch("https://coinranking1.p.rapidapi.com/coin/razxDUgYGNAdQ?referenceCurrencyUuid=yhjMzLPhuIDl&timePeriod=24h", {
+                    method: "GET",
+                    headers: {
+                        "x-rapidapi-key": "2435a78036msh3745ff0bf61ba65p1fb061jsndd122cd1ae59"
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                  console.log('Success:', data);
+                })
+                .catch((error) => {
+                  console.error('Error:', error);
+                });
+
+
+
+            fetch('https://api.imgflip.com/get_memes')
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
 
                 dispatch(setOpenSea({ 
                     user: {

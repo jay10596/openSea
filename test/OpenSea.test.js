@@ -109,7 +109,7 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
         })
     })
 
-    describe('Website fetches/displays a product', async () => {
+    describe('Store fetches/displays a product', async () => {
         let nft
 
         before(async () => {
@@ -169,6 +169,68 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
             it('should transfer ownership', async () => {
                 assert.equal(event.owner, buyer, 'has transfered ownership to the buyer')
             })
+
+            // Minter remains the same
+
+            it('should update traded volume', async () => {
+                assert.equal(Number(event.volume_traded), 1, 'has updated traded volume')
+                assert.isTrue(Number(event.volume_traded) > Number(nft.volume_traded), 'has increased traded volume than before')
+            })
+
+            it('should update timestamp', async () => {
+                assert.equal(Number(event.timestamp), Number(block.timestamp), 'has updated timestamp')
+                assert.isTrue(Number(event.timestamp) > Number(nft.timestamp), 'has much more recent timestamp')
+            })
+        })
+        
+        describe('Failure:', async () => {
+            it('should NOT have invalid ID', async () => {
+                await openSea.purchaseNFT(99, { from: buyer, value: web3.utils.toWei('2', 'Ether') }).should.be.rejected
+
+                assert.equal(nftCount, 1)
+            })
+
+            it('should NOT have insufficient ETH in buyer account', async () => {
+                await openSea.purchaseNFT(nftCount, { from: buyer, value: web3.utils.toWei('0.5', 'Ether') }).should.be.rejected
+                
+                assert.equal(nftCount, 1)
+            })
+
+            it('should NOT let the owner buy his own NFT', async () => {
+                await openSea.purchaseNFT(nftCount, { from: buyer, value: web3.utils.toWei('2', 'Ether') }).should.be.rejected
+                
+                assert.equal(nftCount, 1)
+            })
+        })
+    })
+
+    describe('Buyer sells a purchased NFT', async () => {
+        let nft, ownerOldBalance, buyerOldBalance
+
+        before(async () => {
+            // Before purchasing
+            ownerOldBalance = await web3.eth.getBalance(owner)
+            buyerOldBalance = await web3.eth.getBalance(buyer)
+            nft = await openSea.nfts(nftCount)
+
+            result = await openSea.purchaseNFT(nftCount, { from: buyer, value: web3.utils.toWei('2', 'Ether') })
+            event = result.logs[0].args
+
+            block = await web3.eth.getBlock('latest')
+        })
+
+        describe('Success:', async () => {
+            it('should pay the previous owner', async () => {
+                assert.isTrue(Number(await web3.eth.getBalance(owner)) > Number(ownerOldBalance), 'Owner wallet balance has increased')
+                assert.equal(Number(await web3.eth.getBalance(owner)), (Number(ownerOldBalance) + Number(web3.utils.toWei('2', 'Ether'))), 'Owner has been paid the full amount'),
+                assert.isTrue(Number(await web3.eth.getBalance(buyer)) < Number(buyerOldBalance), 'Buyer wallet balance is decreased')            
+            })
+
+            it('should transfer ownership', async () => {
+                assert.equal(event.owner, buyer, 'has transfered ownership to the buyer')
+            })
+
+            // Minter remains the same
 
             it('should update traded volume', async () => {
                 assert.equal(Number(event.volume_traded), 1, 'has updated traded volume')

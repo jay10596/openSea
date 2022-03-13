@@ -29,7 +29,7 @@ function FeaturedNFTs() {
                     {store.nfts.map((nft, key) => {
                         return (
                             <div key={key}>
-                                <NFTCard nft={nft} />
+                                <NFTCard nft={nft} store={store} type="quick-buy" />
                             </div>
                         )
                     })}
