@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 contract OpenSea {
     // State variables
     string public name;
+    uint public balance = 0; 
     uint public nftCount = 0; 
     uint public collectionCount = 0; 
 
@@ -77,6 +78,7 @@ contract OpenSea {
 
     constructor() {
         name = "OpenSea";
+        balance = 0;
 
         // Create a default collection
         createCollection('Default', '', '', ''); 
@@ -107,12 +109,11 @@ contract OpenSea {
         require(msg.value >= _nft.price); // There is enough ETH in transation
         require(msg.sender != _nft.owner); // Buyer is not the owner
 
-        uint commission = (msg.value * 25) / 1000; // 2.5% OpenSea service fee on each transaction
-        uint royalty = (msg.value * 50) / 1000; // 5% royalty to original artist
+        uint commission = msg.value / 40; // 2.5% OpenSea service fee on each transaction
+        uint royalty = msg.value / 20; // 5% royalty to original artist
         uint price = msg.value - (commission + royalty); // Actual sell price
 
         // Pay 2.5% service fee to OpenSea
-        payable(address(this)).transfer(commission);
 
         // Pay 5% royalty to minter
         payable(_nft.minter).transfer(royalty);
