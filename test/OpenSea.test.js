@@ -7,7 +7,7 @@ require('chai')
     .should()
 
 // Equivalent to [accounts[0], accounts[1], accounts[2]] 
-contract(OpenSea, ([deployer, owner, buyer]) => {
+contract(OpenSea, ([deployer, minter, owner, buyer]) => {
     let openSea, nftCount, collectionCount, result, event
 
     before(async () => {
@@ -48,9 +48,9 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
         })
     })
 
-    describe('Owner mints a NFT', async () => {
+    describe('Minter mints a NFT', async () => {
         before(async () => {
-            result = await openSea.mintNFT('Bored Ape #42', 'This is a stupid looking monkey', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('2', 'Ether'), collectionCount, { from: owner })
+            result = await openSea.mintNFT('Bored Ape #42', 'This is a stupid looking monkey', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('2', 'Ether'), collectionCount, { from: minter })
             event = result.logs[0].args
             
             nftCount = await openSea.nftCount()
@@ -74,8 +74,8 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
             })
 
             it('should have the same and minter owner', async () => {
-                assert.equal(event.minter, owner, 'has a minter')
-                assert.equal(event.owner, owner, 'has an owner')
+                assert.equal(event.minter, minter, 'has a minter')
+                assert.equal(event.owner, minter, 'has an owner')
             })
 
             it('should have 0 traded volume', async () => {
@@ -90,21 +90,21 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
         
         describe('Failure:', async () => {
             it('should NOT have empty name or media', async () => {
-                await openSea.mintNFT('', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('2', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
-                await openSea.mintNFT('Bored Ape #42', '', web3.utils.toWei('2', 'Ether'), collectionCount, { from: owner }).should.be.rejected 
+                await openSea.mintNFT('', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('2', 'Ether'), collectionCount, { from: minter }).should.be.rejected 
+                await openSea.mintNFT('Bored Ape #42', '', web3.utils.toWei('2', 'Ether'), collectionCount, { from: minter }).should.be.rejected 
 
                 assert.equal(nftCount, 1)
             })
 
             it('should NOT have <= price', async () => {
-                await openSea.mintNFT('Bored Ape #42', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', 1, collectionCount, { from: owner }).should.be.rejected 
+                await openSea.mintNFT('Bored Ape #42', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', 1, collectionCount, { from: minter }).should.be.rejected 
                 
                 assert.equal(nftCount, 1)
             })
 
 
             it('should NOT have owner as the buyer', async () => {
-                await openSea.mintNFT('Bored Ape #42', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('2', 'Ether'), { from: owner }).should.be.rejected 
+                await openSea.mintNFT('Bored Ape #42', 'QmfMcrTEwmHVZ32Za91corCmtofVJ1dri722oUT3bhaQsX', web3.utils.toWei('2', 'Ether'), { from: minter }).should.be.rejected 
                 
                 assert.equal(nftCount, 1)
             })
@@ -134,8 +134,8 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
             })
 
             it('should have a minter and a owner', async () => {
-                assert.equal(nft.minter, owner, 'has a minter')
-                assert.equal(nft.owner, owner, 'has an owner')
+                assert.equal(nft.minter, minter, 'has a minter')
+                assert.equal(nft.owner, minter, 'has an owner')
             })
         })
         
@@ -148,21 +148,22 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
         })
     })
 
-    describe('Buyer purchases a NFT', async () => {
-        let nft, ownerOldBalance, buyerOldBalance, commission, royalty, price
+    describe('Owner owns a NFT', async () => {
+        let nft, minterOldBalance, ownerOldBalance, commission, royalty, price
 
         before(async () => {
             // Before purchasing
+            nft = await openSea.nfts(nftCount)            
+            minterOldBalance = await web3.eth.getBalance(minter)
             ownerOldBalance = await web3.eth.getBalance(owner)
-            buyerOldBalance = await web3.eth.getBalance(buyer)
-            nft = await openSea.nfts(nftCount)
 
-            result = await openSea.purchaseNFT(nftCount, { from: buyer, value: Number(event.price) })
+            // Owner purchases minted NFT
+            result = await openSea.purchaseNFT(nftCount, { from: owner, value: Number(event.price) })
             event = result.logs[0].args
 
             commission = Number(event.price) / 40 
             royalty = Number(event.price) / 20
-            price = event.price - (commission + royalty)
+            price = Number(event.price) - (commission + royalty)
             block = await web3.eth.getBlock('latest')
         })
 
@@ -172,8 +173,80 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
                 assert.equal(Number(await web3.eth.getBalance(openSea.address)), commission, 'OpenSea has been paid 2.5% Service fee')
             })
 
+            it('should pay royalty and remaining price to the previous owner/minter', async () => {
+                assert.isTrue(Number(await web3.eth.getBalance(minter)) > Number(minterOldBalance), 'Minter wallet balance has increased')
+                assert.equal(Number(await web3.eth.getBalance(event.minter)), Number(minterOldBalance) + price + royalty, 'Minter has been paid 5% royalty')
+                assert.isTrue(Number(await web3.eth.getBalance(owner)) < Number(ownerOldBalance), 'Owner wallet balance is decreased')            
+            })
+
+            it('should transfer ownership', async () => {
+                assert.equal(event.owner, owner, 'has transfered ownership to the owner')
+            })
+
+            it('should not update the minter', async () => {
+                assert.equal(event.minter, minter, 'has the same minter')
+            })
+
+            it('should update traded volume', async () => {
+                assert.equal(Number(event.volume_traded), 1, 'has updated traded volume')
+                assert.isTrue(Number(event.volume_traded) > Number(nft.volume_traded), 'has increased traded volume than before')
+            })
+
+            it('should update timestamp', async () => {
+                assert.equal(Number(event.timestamp), Number(block.timestamp), 'has updated timestamp')
+                assert.isTrue(Number(event.timestamp) > Number(nft.timestamp), 'has much more recent timestamp')
+            })
+        })
+        
+        describe('Failure:', async () => {
+            it('should NOT have invalid ID', async () => {
+                await openSea.purchaseNFT(99, { from: owner, value: web3.utils.toWei('2', 'Ether') }).should.be.rejected
+
+                assert.equal(nftCount, 1)
+            })
+
+            it('should NOT have insufficient ETH in buyer account', async () => {
+                await openSea.purchaseNFT(nftCount, { from: owner, value: web3.utils.toWei('0.5', 'Ether') }).should.be.rejected
+                
+                assert.equal(nftCount, 1)
+            })
+
+            it('should NOT let the owner buy his own NFT', async () => {
+                await openSea.purchaseNFT(nftCount, { from: owner, value: web3.utils.toWei('2', 'Ether') }).should.be.rejected
+                
+                assert.equal(nftCount, 1)
+            })
+        })
+    })
+
+    describe('Buyer purchases a NFT', async () => {
+        let nft, minterOldBalance, ownerOldBalance, buyerOldBalance, commission, royalty, price
+
+        before(async () => {
+            // Before purchasing
+            nft = await openSea.nfts(nftCount)            
+            minterOldBalance = await web3.eth.getBalance(minter)
+            ownerOldBalance = await web3.eth.getBalance(owner)
+            buyerOldBalance = await web3.eth.getBalance(buyer)
+
+            // 1st Owner sells it to another buyer
+            result = await openSea.purchaseNFT(nftCount, { from: buyer, value: Number(event.price) })
+            event = result.logs[0].args
+
+            commission = Number(event.price) / 40 
+            royalty = Number(event.price) / 20
+            price = Number(event.price) - (commission + royalty)
+            block = await web3.eth.getBlock('latest')
+        })
+
+        describe('Success:', async () => {
+            it('should pay service fee to the OpenSea', async () => {
+                assert.isTrue(Number(await web3.eth.getBalance(openSea.address)) > 0, 'OpenSea wallet balance has increased')
+                assert.equal(Number(await web3.eth.getBalance(openSea.address)), commission + commission, 'OpenSea has been paid 2.5% Service fee twice')
+            })
+
             it('should pay royalty to the minter', async () => {
-                assert.equal(Number(await web3.eth.getBalance(event.minter)), Number(await web3.eth.getBalance(event.minter) + royalty), 'Minter has been paid 5% royalty')
+                assert.equal(Number(await web3.eth.getBalance(event.minter)), Number(minterOldBalance) + royalty, 'Minter has been paid 5% royalty')
             })
 
             it('should pay remaining price to the previous owner', async () => {
@@ -187,11 +260,11 @@ contract(OpenSea, ([deployer, owner, buyer]) => {
             })
 
             it('should not update the minter', async () => {
-                assert.equal(event.minter, owner, 'has the same minter')
+                assert.equal(event.minter, minter, 'has the same minter')
             })
 
             it('should update traded volume', async () => {
-                assert.equal(Number(event.volume_traded), 1, 'has updated traded volume')
+                assert.equal(Number(event.volume_traded), 2, 'has updated traded volume')
                 assert.isTrue(Number(event.volume_traded) > Number(nft.volume_traded), 'has increased traded volume than before')
             })
 

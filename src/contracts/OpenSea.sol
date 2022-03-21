@@ -130,7 +130,7 @@ contract OpenSea {
         nfts[_id] = _nft;
 
         // Trigger an event
-        emit NFTPurchased(_id, _nft.name, _nft.description, _nft.mediaHash, _nft.price, _nft.owner, msg.sender, _nft.volume_traded, block.timestamp, _nft.collection_id);
+        emit NFTPurchased(_id, _nft.name, _nft.description, _nft.mediaHash, _nft.price, _nft.minter, msg.sender, _nft.volume_traded, block.timestamp, _nft.collection_id);
     }
 
     function createCollection(string memory _name, string memory _description, string memory _mediaHash, string memory _coverHash) public {
